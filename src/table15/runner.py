@@ -1,16 +1,16 @@
-import sys
-from turtle import shape
-sys.path.insert(0, '../')
-
 import warnings
+import yaml
+import json
 import magec_utils as mg
 import pima_utils as pm
 import pandas as pd
-pd.set_option('display.max_columns', None)
 warnings.filterwarnings('ignore') 
 
 
-def run(diabs_path='../data/diabetes.csv'):
+def run(configs_path='../configs/pima_diabetes.yaml'):
+    configs = yaml_parser(configs_path)
+    print(configs)
+    exit()
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(filename=diabs_path)
     print(x_train_p.shape)
@@ -53,7 +53,7 @@ def run(diabs_path='../data/diabetes.csv'):
 
     models = ('mlp', 'rf', 'lr')
 
-    magec_totals = avg_magecs(joined)
+    magec_totals = mg.avg_magecs(joined)
 
     print(magec_totals)
 
@@ -63,3 +63,9 @@ def run(diabs_path='../data/diabetes.csv'):
     # print(consensus.head())
 
     return magec_totals
+
+
+def yaml_parser(yaml_path):
+    with open(yaml_path, 'r') as file:
+        parsed_yaml = yaml.safe_load(file)
+    return parsed_yaml
