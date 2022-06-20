@@ -10,6 +10,7 @@ warnings.filterwarnings('ignore')
 def run(configs_path='../configs/pima_diabetes.yaml'):
     configs = yaml_parser(configs_path)
     print(configs)
+    print(type(configs))
     exit()
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(filename=diabs_path)
