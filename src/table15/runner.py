@@ -3,7 +3,7 @@ import yaml
 import json
 import magec_utils as mg
 import pima_utils as pm
-import pipeline_utils as pu
+import .pipeline_utils as pu
 import pandas as pd
 warnings.filterwarnings('ignore') 
 
