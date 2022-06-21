@@ -1,4 +1,4 @@
-
+from typing import Dict
 import yaml
 
 def yaml_parser(yaml_path):
