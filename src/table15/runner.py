@@ -5,7 +5,7 @@ from . import pipeline_utils as pu
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
     configs = pu.yaml_parser(configs_path)
-    diabs_path = pu.get_from_configs('DIABS_PATH')
+    diabs_path = pu.get_from_configs(configs, 'DIABS_PATH')
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
@@ -35,7 +35,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     magecs_en = mg.normalize_magecs(case_en, features=None, model_name='ensemble')
     magecs_en = magecs_en.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
 
-    features =  pu.get_from_configs('FEATURES')
+    features =  pu.get_from_configs(configs, 'FEATURES')
 
     joined = mg.magec_models(magecs_mlp, 
                          magecs_rf, 
