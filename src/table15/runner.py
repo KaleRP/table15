@@ -1,11 +1,6 @@
-import warnings
-import yaml
-import json
-import magec_utils as mg
-import pima_utils as pm
-import pipeline_utils as pu
-import pandas as pd
-warnings.filterwarnings('ignore') 
+from . import magec_utils as mg
+from . import pima_utils as pm
+from . import pipeline_utils as pu
 
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
