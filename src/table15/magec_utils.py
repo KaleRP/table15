@@ -534,19 +534,14 @@ def magec_rank(magecs,
 
 
 def avg_magecs(magecs, models=('mlp', 'rf', 'lr'), features=('BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness'), 
-               outcome='Outcome'):
+               outcome='Outcome', policy='sum'):
     magec_totals = {}
 
     # each row contains all MAgEC coefficients for a 'case/timepoint'
+    print(magecs.head())
+
     for (idx, row) in magecs.iterrows():
         model_ranks = {}
-        if outcome in row:
-            key = (row['case'], row['timepoint'], row[outcome])
-        else:
-            key = (row['case'], row['timepoint'])
-        for model in models:
-            # initialize all models coefficients (empty list)
-            model_ranks[model] = list()
         for col in features:
             # iterate of all features
             for model in models:
@@ -557,10 +552,11 @@ def avg_magecs(magecs, models=('mlp', 'rf', 'lr'), features=('BloodPressure', 'B
                 if col not in magec_totals:
                     magec_totals[col] = 0
                 magec_totals[col] += magec
-    # Take average score
-    num_rows = len(magecs)
-    for feat in magec_totals:
-        magec_totals[feat] /= num_rows
+    if policy == 'avg':
+        # Take average score
+        num_rows = len(magecs)
+        for feat in magec_totals:
+            magec_totals[feat] /= num_rows
     return magec_totals
 
 

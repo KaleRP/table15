@@ -1,11 +1,10 @@
 from . import magec_utils as mg
 from . import pima_utils as pm
-from . import pipeline_utils as pu
+from . import pipeline_utils as pl_utils
 
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
-    configs = pu.yaml_parser(configs_path)
-    diabs_path = pu.get_from_configs(configs, 'DIABS_PATH')
+    configs = pl_utils.yaml_parser(configs_path)
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
@@ -35,7 +34,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     magecs_en = mg.normalize_magecs(case_en, features=None, model_name='ensemble')
     magecs_en = magecs_en.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
 
-    features =  pu.get_from_configs(configs, 'FEATURES')
+    features =  pl_utils.get_from_configs(configs, 'FEATURES')
 
     joined = mg.magec_models(magecs_mlp, 
                          magecs_rf, 
@@ -47,7 +46,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     models = ('mlp', 'rf', 'lr')
 
-    magec_totals = mg.avg_magecs(joined)
+    policy = pl_utils.get_from_configs('policy', 'CONFIGS')
+
+    magec_totals = mg.avg_magecs(joined, policy=policy)
 
     print(magec_totals)
 
