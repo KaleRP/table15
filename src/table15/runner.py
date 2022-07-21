@@ -57,4 +57,4 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     # print(consensus.head())
 
-    return magec_totals
+    return joined, magec_totals
