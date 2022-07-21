@@ -59,7 +59,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         scores = mg.magec_scores(magecs_feats, row, use_weights=False, policy=policy)
         out.append(scores)
 
-    return out
+    return out, df
 
 
 
