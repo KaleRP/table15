@@ -885,7 +885,7 @@ def magec_scores(magecs_feats,
     if policy == 'mean':
         for feat, score in scores.items():
             score /= len(consensus[feat])
-    return scores, consensus
+    return scores
 
 
 def enhance_consensus(consensus, rbos, models=('mlp', 'rf', 'lr')):
