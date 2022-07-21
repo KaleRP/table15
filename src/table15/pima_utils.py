@@ -103,7 +103,7 @@ def pima_models(x_train_p, y_train_p):
     mlp.fit(x_train_p, y_train_p)
 
     rf = RandomForestClassifier(n_estimators=1000)
-    rf.fit(x_train_p, y_train_p)
+    rf.fit(x_train_p, y_train_p.values.ravel())
     sigmoidRF = CalibratedClassifierCV(RandomForestClassifier(n_estimators=1000), cv=5, method='sigmoid')
     sigmoidRF.fit(x_train_p, y_train_p)
 
