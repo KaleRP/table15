@@ -51,7 +51,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features)
 
-    cols = list(set(all_ranked_df.columns) - {'case', 'timepoint', 'outcome'})
+    cols = list(set(all_ranked_df.columns) - {'case', 'timepoint', 'Outcome'})
     magecs_feats = mg.name_matching(cols, models)
 
     out = list()
