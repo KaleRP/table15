@@ -46,7 +46,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     models = ('mlp', 'rf', 'lr')
 
-    policy = pl_utils.get_from_configs('policy', 'CONFIGS')
+    policy = pl_utils.get_from_configs(configs, 'POLICY', param_type='CONFIGS')
 
     magec_totals = mg.avg_magecs(joined, policy=policy)
 
