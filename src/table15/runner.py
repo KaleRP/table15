@@ -4,6 +4,7 @@ from . import pipeline_utils as pl_utils
 
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
+    print('This is Version: 0.0.1')
     configs = pl_utils.yaml_parser(configs_path)
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
