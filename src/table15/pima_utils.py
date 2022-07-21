@@ -100,22 +100,22 @@ def pima_models(x_train_p, y_train_p):
 
     mlp = KerasClassifier(build_fn=create_mlp, epochs=100, batch_size=64, verbose=0)
     mlp._estimator_type = "classifier"
-    mlp.fit(x_train_p, y_train_p)
+    mlp.fit(x_train_p, y_train_p.values.ravel())
 
     rf = RandomForestClassifier(n_estimators=1000)
     rf.fit(x_train_p, y_train_p.values.ravel())
     sigmoidRF = CalibratedClassifierCV(RandomForestClassifier(n_estimators=1000), cv=5, method='sigmoid')
-    sigmoidRF.fit(x_train_p, y_train_p)
+    sigmoidRF.fit(x_train_p, y_train_p.values.ravel())
 
     lr = LogisticRegression(C=1.)
-    lr.fit(x_train_p, y_train_p)
+    lr.fit(x_train_p, y_train_p.values.ravel())
 
     # create a dictionary of our models
     estimators = [('lr', lr), ('rf', sigmoidRF), ('mlp', mlp)]
     # create our voting classifier, inputting our models
     ensemble = VotingClassifier(estimators, voting='soft')
     ensemble._estimator_type = "classifier"
-    ensemble.fit(x_train_p, y_train_p)
+    ensemble.fit(x_train_p, y_train_p.values.ravel())
 
     return {'mlp': mlp, 'rf': sigmoidRF, 'lr': lr, 'ensemble': ensemble}
 
