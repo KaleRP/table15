@@ -51,8 +51,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features)
 
-    print(all_ranked_df.head())
-
     cols = list(set(all_ranked_df.columns) - {'case', 'timepoint', 'Outcome'})
     magecs_feats = mg.name_matching(cols, models)
 
@@ -61,19 +59,4 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         scores = mg.magec_scores(magecs_feats, row, use_weights=False, policy=policy)
         out.append(scores)
 
-    return out
-
-
-
-
-
-    magec_totals = mg.avg_magecs(joined, policy=policy)
-
-    print(magec_totals)
-
-    # ranks = mg.magec_rank(joined, rank=len(features), features=features)
-    # consensus = mg.magec_consensus(ranks, use_weights=True, models=models)
-
-    # print(consensus.head())
-
-    return joined, magec_totals
+    return out, joined

@@ -539,7 +539,6 @@ def avg_magecs(magecs, models=('mlp', 'rf', 'lr'), features=('BloodPressure', 'B
     magec_totals = {}
 
     # each row contains all MAgEC coefficients for a 'case/timepoint'
-    print(magecs.head())
 
     for (idx, row) in magecs.iterrows():
         model_ranks = {}
