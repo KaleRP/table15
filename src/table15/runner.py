@@ -4,7 +4,7 @@ from . import pipeline_utils as pl_utils
 
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
-    print('This is Version: 0.0.1')
+    print('This is Version: 0.0.2')
     configs = pl_utils.yaml_parser(configs_path)
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
@@ -59,7 +59,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         scores = mg.magec_scores(magecs_feats, row, use_weights=False, policy=policy)
         out.append(scores)
 
-    return out, df
+    return out, joined
 
 
 
