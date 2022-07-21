@@ -722,41 +722,6 @@ def magec_consensus(magec_ranks,
 
     cols = list(set(magec_ranks.columns) - {'case', 'timepoint', outcome})
 
-    def name_matching(cols, models):
-        # get all magec column names
-        col_names = dict()
-        for col in cols:
-            prefix = col.split('_')[0]
-            if prefix in models:
-                if prefix in col_names:
-                    col_names[prefix].append(col)
-                else:
-                    col_names[prefix] = [col]
-        # magec/feat column names come in pairs
-        magecs_feats = dict()
-        for model, cols in col_names.items():
-            feat2magic = dict()
-            assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
-            if len(cols) == 2:
-                if 'feat' in cols[0] and 'magec' in cols[1]:
-                    feat2magic[cols[0]] = cols[1]
-                elif 'feat' in cols[1] and 'magec' in cols[0]:
-                    feat2magic[cols[1]] = cols[0]
-                else:
-                    raise ValueError('magec/feat substring not present in column names')
-            else:
-                # reversed names sorted (e.g. 1_taef_plm)
-                feats = sorted([col[::-1] for col in cols if 'feat' in col])
-                # reversed names sorted (e.g. 1_cegam_plm)
-                magecs = sorted([col[::-1] for col in cols if 'magec' in col])
-                assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
-                assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
-                for i, feat in enumerate(feats):
-                    feat2magic[feat[::-1]] = magecs[i][::-1]
-            # return dictionary with magec feature column names and magec value column name for every model
-            magecs_feats[model] = feat2magic
-        return magecs_feats
-
     magecs_feats = name_matching(cols, models)
 
     out = list()
@@ -797,6 +762,41 @@ def magec_consensus(magec_ranks,
                    'consensus', 'models',
                    'avg_percent_consensus', 'avg_percent_all']
     return out
+
+def name_matching(cols, models):
+    # get all magec column names
+    col_names = dict()
+    for col in cols:
+        prefix = col.split('_')[0]
+        if prefix in models:
+            if prefix in col_names:
+                col_names[prefix].append(col)
+            else:
+                col_names[prefix] = [col]
+    # magec/feat column names come in pairs
+    magecs_feats = dict()
+    for model, cols in col_names.items():
+        feat2magic = dict()
+        assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
+        if len(cols) == 2:
+            if 'feat' in cols[0] and 'magec' in cols[1]:
+                feat2magic[cols[0]] = cols[1]
+            elif 'feat' in cols[1] and 'magec' in cols[0]:
+                feat2magic[cols[1]] = cols[0]
+            else:
+                raise ValueError('magec/feat substring not present in column names')
+        else:
+            # reversed names sorted (e.g. 1_taef_plm)
+            feats = sorted([col[::-1] for col in cols if 'feat' in col])
+            # reversed names sorted (e.g. 1_cegam_plm)
+            magecs = sorted([col[::-1] for col in cols if 'magec' in col])
+            assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
+            assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
+            for i, feat in enumerate(feats):
+                feat2magic[feat[::-1]] = magecs[i][::-1]
+        # return dictionary with magec feature column names and magec value column name for every model
+        magecs_feats[model] = feat2magic
+    return magecs_feats
 
 
 def magec_winner(magecs_feats,
@@ -839,11 +839,52 @@ def magec_winner(magecs_feats,
     # get consensus
     for feat, score in scores.items():
         if policy == 'mean':
-            score /= len(consensus[feat])
+            scores[feat] /= len(consensus[feat])
         if winner is None or score > winner[1]:
             winner = (feat, score, len(consensus[feat]), sorted(list(consensus[feat])))
 
     return winner
+
+def magec_scores(magecs_feats,
+                 row,
+                 scoring=lambda w: abs(w),
+                 use_weights=False,
+                 weights={'rf': None, 'mlp': None, 'lr': None},
+                 policy='sum'):
+    """
+    Returns a dictionary of all MAgEC scores computed as a naive sum across models
+    magecs_feats is a dictionary with magec feature column names and magec value column names for every model,
+     e.g
+    {'rf': {'rf_feat_1': 'rf_magec_1', 'rf_feat_2': 'rf_magec_2'},
+     'mlp': {'mlp_feat_1': 'mlp_magec_1', 'mlp_feat_2': 'mlp_magec_2'},
+     'lr': {'lr_feat_1': 'lr_magec_1', 'lr_feat_2': 'lr_magec_2'}}
+    """
+
+    assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
+
+    consensus = {}
+    scores = {}
+    if use_weights:
+        assert sorted(weights.keys()) == sorted(magecs_feats.keys())
+    for model, feat_dict in magecs_feats.items():
+        for feat_col, score_col in feat_dict.items():
+            feat = row[feat_col]
+            if feat == 'not_found':
+                continue
+            score = scoring(row[score_col])
+            if use_weights:
+                if weights[model] is not None:
+                    score *= weights[model]
+            if feat in scores:
+                scores[feat] += score
+                consensus[feat].add(model)
+            else:
+                scores[feat] = score
+                consensus[feat] = {model}
+    if policy == 'mean':
+        for feat, score in scores.items():
+            score /= len(consensus[feat])
+    return scores, consensus
 
 
 def enhance_consensus(consensus, rbos, models=('mlp', 'rf', 'lr')):

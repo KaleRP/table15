@@ -49,6 +49,22 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     policy = pl_utils.get_from_configs(configs, 'POLICY', param_type='CONFIGS')
 
+    all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features)
+
+    cols = list(set(all_ranked_df.columns) - {'case', 'timepoint', 'outcome'})
+    magecs_feats = mg.name_matching(cols, models)
+
+    out = list()
+    for (idx, row) in all_ranked_df.iterrows():
+        scores = mg.magec_scores(magecs_feats, row, use_weights=False, policy=policy)
+        out.append(scores)
+
+    return out
+
+
+
+
+
     magec_totals = mg.avg_magecs(joined, policy=policy)
 
     print(magec_totals)
