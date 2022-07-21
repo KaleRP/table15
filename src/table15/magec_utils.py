@@ -500,12 +500,13 @@ def magec_rank(magecs,
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
                 magec, feat = heapq.heappop(v[model])
-                if magec < 0:  # negative magecs are originally positive magecs and are filtered out
-                    l.append(None)
-                    l.append("not_found")
-                else:
-                    l.append(-magec)  # retrieve original magec sign
-                    l.append(feat)
+                # Commenting out below code keeps all values, not just "positive" values
+                # if magec < 0:  # negative magecs are originally positive magecs and are filtered out
+                #     l.append(None)
+                #     l.append("not_found")
+                # else:
+                l.append(-magec)  # retrieve original magec sign
+                l.append(feat)
         out.append(l)
 
     out = pd.DataFrame.from_records(out)
