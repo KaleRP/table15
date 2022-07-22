@@ -76,6 +76,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
 
 def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None):
     # p_name = multiprocessing.current_process().name
+    p_name = model_name
     print('Starting:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
@@ -85,8 +86,5 @@ def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, bas
     magecs = mg.normalize_magecs(magecs, features=None, model_name=model_name)
     print('Magecs for {} normalized...'.format(p_name))
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
-    print('Exiting :', key)
-    return_dict[key] = magecs
-    
-    # print('Exiting :', p_name)
-    # return_dict[p_name] = magecs
+    print('Exiting :', p_name)
+    return_dict[p_name] = magecs
