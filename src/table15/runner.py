@@ -52,7 +52,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     #     p.start()
     # for p in processes:
     #     p.join()
-
+    print('run_dfs.values()', run_dfs.values())
     joined = mg.magec_models(*run_dfs.values(),
                             Xdata=x_validation_p, 
                             Ydata=y_validation_p, 
