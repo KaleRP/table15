@@ -28,7 +28,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     print('getting magecs...')
     # with multiprocessing.Manager() as manager:
-    run_dfs = manager.dict()
+    # run_dfs = manager.dict()
+    run_dfs = dict()
     processes = []
     keys = []
     for model in models_dict.keys():
