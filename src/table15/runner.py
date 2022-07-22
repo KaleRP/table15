@@ -53,6 +53,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for p in processes:
             p.join()
     baseline_runs = defaultdict(list)
+    print('********************')
+    print(run_dfs.keys())
     keys = sorted(keys)
     print(keys)
     for key in keys:
