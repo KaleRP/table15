@@ -1,3 +1,4 @@
+from email.mime import base
 import pandas as pd
 import multiprocessing
 from multiprocessing import set_start_method
@@ -5,6 +6,7 @@ from . import magec_utils as mg
 from . import pima_utils as pm
 from . import pipeline_utils as plutils
 import time
+from collections import defaultdict
 import warnings
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
@@ -27,31 +29,40 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     models_dict = pm.pima_models(x_train_p, y_train_p, models)
 
     print('getting magecs...')
-    # with multiprocessing.Manager() as manager:
-    # run_dfs = manager.dict()
-    run_dfs = dict()
-    processes = []
-    keys = []
-    for model in models_dict.keys():
+    with multiprocessing.Manager() as manager:
+        run_dfs = manager.dict()
+        processes = []
+        keys = []
         for baseline in baselines:
-            print(baseline)
-            key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
-            keys.append(key)
-            clf = models_dict[model]
-            if model in ['mlp', 'lstm']:
-                clf = clf.model
-            run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
-            # p = multiprocessing.Process(name=key, 
-            #                             target=run_magecs, 
-            #                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
-            # p.start()
-            # time.sleep(1)
-            # processes.append(p)
+            for model in models_dict.keys():
+                key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
+                keys.append(key)
+                clf = models_dict[model]
+                if model in ['mlp', 'lstm']:
+                    clf = clf.model
+                # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
+                p = multiprocessing.Process(name=key, 
+                                            target=run_magecs, 
+                                            args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
+                p.start()
+                time.sleep(1)
+                processes.append(p)
+        
+        # for p in processes:
+        #     p.start()
+        for p in processes:
+            p.join()
+    baseline_runs = defaultdict(list)
+    keys = sorted(keys)
+    for key, in keys:
+        baseline = key.split('_p')[1] / 100
+        assert str(baseline) in baselines
+        baseline_runs[baseline].append(run_dfs[key])
+
+    print('***********')
+    print(baseline_runs.keys())
+
     
-    # for p in processes:
-    #     p.start()
-    # for p in processes:
-    #     p.join()
     joined = mg.magec_models(*run_dfs.values(),
                             Xdata=x_validation_p, 
                             Ydata=y_validation_p, 
