@@ -458,7 +458,7 @@ def magec_rank(magecs,
     """
     ranks = {}
 
-    print('columns:', magec.columns)
+    print('columns:', magecs.columns)
 
     # each row contains all MAgEC coefficients for a 'case/timepoint'
     for (idx, row) in magecs.iterrows():
