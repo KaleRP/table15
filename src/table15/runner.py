@@ -56,7 +56,11 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     keys = sorted(keys)
     print(keys)
     for key in keys:
-        baseline = key.split('_p')[1] / 100
+        baseline = key.split('_')[1]
+        if baseline[0] == 'p':
+            baseline = int(baseline[1:]) / 100
+        else:
+            baseline = int(baseline)
         assert str(baseline) in baselines
         baseline_runs[baseline].append(run_dfs[key])
 
