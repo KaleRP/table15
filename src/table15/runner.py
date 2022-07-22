@@ -4,6 +4,7 @@ from multiprocessing import set_start_method
 from . import magec_utils as mg
 from . import pima_utils as pm
 from . import pipeline_utils as plutils
+import time
 import warnings
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
@@ -40,10 +41,12 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 p = multiprocessing.Process(name=key, 
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
-                processes.append(p)
+                p.start()
+                time.sleep(1)
+                # processes.append(p)
         
-        for p in processes:
-            p.start()
+        # for p in processes:
+        #     p.start()
         for p in processes:
             p.join()
 
