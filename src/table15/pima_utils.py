@@ -12,7 +12,7 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 import magec_utils as mg
-from . import pipeline_utils as pl_utils
+from . import pipeline_utils as plutils
 import os
 
 
@@ -24,21 +24,21 @@ def pima_data(configs):
 
     def impute(df):
         out = df.copy()
-        exclude_cols = pl_utils.get_from_configs(configs, 'EXCLUDE_COLS')
+        exclude_cols = plutils.get_from_configs(configs, 'EXCLUDE_COLS')
         cols = list(set(df.columns) - set(exclude_cols))
         out[cols] = out[cols].replace(0, np.NaN)
         out[cols] = out[cols].fillna(out[cols].mean())
         return out
 
-    filename = pl_utils.get_from_configs(configs, 'DIABS_PATH')
+    filename = plutils.get_from_configs(configs, 'DIABS_PATH')
     pima = pd.read_csv(filename)
 
-    random_seed = pl_utils.get_from_configs(configs, 'RANDOM_SEED', param_type='hyperparams')
+    random_seed = plutils.get_from_configs(configs, 'RANDOM_SEED', param_type='hyperparams')
     if random_seed is not None:
         np.random.seed(random_seed)
     x = pima.iloc[:, 0:-1]
     Y = pima.iloc[:, -1]
-    test_size = pl_utils.get_from_configs(configs, 'TEST_SIZE', param_type='hyperparams')
+    test_size = plutils.get_from_configs(configs, 'TEST_SIZE', param_type='hyperparams')
 
     x_train, x_validation, Y_train, Y_validation = train_test_split(x, Y, test_size=test_size, random_state=random_seed)
 
