@@ -45,7 +45,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
                 p.start()
-                time.sleep(5)
+                time.sleep(30)
                 processes.append(p)
         
         # for p in processes:
