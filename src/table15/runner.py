@@ -61,7 +61,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             baseline = int(baseline[1:]) / 100
         else:
             baseline = int(baseline)
-        assert str(baseline) in baselines
+        yaml_check = baseline
+        if baseline == 0:
+            yaml_check = None
+        assert yaml_check in baselines
         baseline_runs[baseline].append(run_dfs[key])
 
     print('***********')
