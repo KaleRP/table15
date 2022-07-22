@@ -435,13 +435,13 @@ def magec_models(*magecs, **kwargs):
     jcols, cols = magec_cols(magecs[0], features)
     magec = magecs[0][cols]
     if Xdata is not None:
-        magec = magec.merge(Xdata.reset_index(), left_on=jcols, right_on=jcols)
+        magec = magec.merge(Xdata.reset_index(), on=jcols)
     if Ydata is not None:
-        magec = magec.merge(Ydata.reset_index(), left_on=jcols, right_on=jcols)
+        magec = magec.merge(Ydata.reset_index(), on=jcols)
     for mgc in magecs[1:]:
         _, cols = magec_cols(mgc, features)
         mgc = mgc[cols]
-        magec = magec.merge(mgc, left_on=jcols, right_on=jcols)
+        magec = magec.merge(mgc, on=jcols)
     print('cols)')
     print(magec.columns)
     return magec
