@@ -458,7 +458,9 @@ def magec_rank(magecs,
     """
     ranks = {}
     print('models', models)
+    print(type(models))
     print('features', features)
+    print(type(features))
 
     # each row contains all MAgEC coefficients for a 'case/timepoint'
     for (idx, row) in magecs.iterrows():
@@ -475,6 +477,9 @@ def magec_rank(magecs,
             for model in models:
                 # each model should contain a corresponding magec
                 feat = create_magec_col(model, col)
+                print('./....')
+                print(model)
+                print(col)
                 assert feat in row, "feature {} not in magecs".format(feat)
                 magec = row[feat]
                 # we are using a priority queue for the magec coefficients
