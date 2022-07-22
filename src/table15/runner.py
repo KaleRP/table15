@@ -31,6 +31,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         keys = []
         for model in models.keys():
             for baseline in baselines:
+                print(baseline)
                 key = model + '_p{}'.format(int(baseline * 10)) if baseline is not None else model + '_0'
                 keys.append(key)
                 clf = models[model]
