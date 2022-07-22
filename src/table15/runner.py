@@ -40,7 +40,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             clf = models_dict[model]
             if model in ['mlp', 'lstm']:
                 clf = clf.model
-            run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, baseline)
+            run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
             # p = multiprocessing.Process(name=key, 
             #                             target=run_magecs, 
             #                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
@@ -57,7 +57,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                             Xdata=x_validation_p, 
                             Ydata=y_validation_p, 
                             features=features)
-
+    print('features', features)
     all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
     scores_df = agg_scores(all_ranked_df, policy=policy)
     return scores_df, joined
@@ -74,9 +74,9 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     
     return pd.DataFrame.from_records(out)
 
-def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None):
+def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key, baseline=None):
     # p_name = multiprocessing.current_process().name
-    p_name = model_name
+    p_name = key
     print('Starting:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)

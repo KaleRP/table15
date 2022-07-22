@@ -457,6 +457,8 @@ def magec_rank(magecs,
     Positive magecs indicate counter-productive interventions.
     """
     ranks = {}
+    print('models', models)
+    print('features', features)
 
     # each row contains all MAgEC coefficients for a 'case/timepoint'
     for (idx, row) in magecs.iterrows():
