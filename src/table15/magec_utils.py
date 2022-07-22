@@ -442,6 +442,8 @@ def magec_models(*magecs, **kwargs):
         _, cols = magec_cols(mgc, features)
         mgc = mgc[cols]
         magec = magec.merge(mgc, left_on=jcols, right_on=jcols)
+    print('cols)')
+    print(magec.columns)
     return magec
 
 
