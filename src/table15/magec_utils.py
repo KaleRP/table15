@@ -124,7 +124,7 @@ def static_prediction(model, target_data, score_preprocessing,
         df = target_data.loc[idx].copy()
     elif label == 'perturb':
         df = target_data.loc[idx].copy()
-        if baseline is None:
+        if baseline in [None, 'None']:
             if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
                 new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
                 new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
@@ -141,7 +141,7 @@ def static_prediction(model, target_data, score_preprocessing,
                 raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
             else:
                 tmp = df.loc[:, var_name]
-                new_val = tmp - tmp * baseline
+                new_val = tmp - tmp * float(baseline)
             df.loc[:, var_name] = new_val
     else:
         raise ValueError("label must be either 'orig' or' 'perturb")
@@ -162,7 +162,7 @@ def series_prediction(model, target_data, score_preprocessing,
     elif label == 'perturb':
         df = target_data.copy()
         idx = df.index.get_level_values('timepoint') == timepoint
-        if baseline is None:
+        if baseline in [None, 'None']:
             if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
                 new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
                 new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
@@ -179,7 +179,7 @@ def series_prediction(model, target_data, score_preprocessing,
                 raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
             else:
                 tmp = df.loc[:, var_name]
-                new_val = tmp - tmp * baseline
+                new_val = tmp - tmp * float(baseline)
             df.loc[idx, var_name] = new_val
     else:
         raise ValueError("label must be either 'orig' or' 'perturb")

@@ -32,7 +32,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for model in models.keys():
             for baseline in baselines:
                 print(baseline)
-                key = model + '_p{}'.format(int(baseline * 10)) if baseline not in [None, 'None'] else model + '_0'
+                key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
                 clf = models[model]
                 if model in ['mlp', 'lstm']:
