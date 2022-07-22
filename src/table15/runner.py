@@ -13,7 +13,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     warnings.filterwarnings('ignore')
     set_start_method("spawn")
 
-    print('This is Version: 0.0.3')
+    print('This is Version: 0.0.4')
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES')
@@ -53,6 +53,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for p in processes:
             p.join()
     baseline_runs = defaultdict(list)
+    print(keys)
     keys = sorted(keys)
     for key, in keys:
         baseline = key.split('_p')[1] / 100
@@ -83,9 +84,8 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     
     return pd.DataFrame.from_records(out)
 
-def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key, baseline=None):
-    # p_name = multiprocessing.current_process().name
-    p_name = key
+def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None):
+    p_name = multiprocessing.current_process().name
     print('Starting:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
