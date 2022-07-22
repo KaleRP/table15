@@ -80,44 +80,54 @@ def pima_data(configs):
     return pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p
 
 
-def pima_models(x_train_p, y_train_p):
+def pima_models(x_train_p, y_train_p, models):
     """
     3 ML models for PIMA (scaled) data
     :param x_train_p:
     :param Y_train:
     :return:
     """
+    estimators = list()
 
-    def create_mlp():
-        mlp = Sequential()
-        mlp.add(Dense(60, input_dim=len(x_train_p.columns), activation='relu'))
-        mlp.add(Dropout(0.2))
-        mlp.add(Dense(30, input_dim=60, activation='relu'))
-        mlp.add(Dropout(0.2))
-        mlp.add(Dense(1, activation='sigmoid'))
-        mlp.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-        return mlp
+    if 'lr' in models:
+        lr = LogisticRegression(C=1.)
+        lr.fit(x_train_p, y_train_p.values.ravel())
+        estimators.append(('lr', lr))
 
-    mlp = KerasClassifier(build_fn=create_mlp, epochs=100, batch_size=64, verbose=0)
-    mlp._estimator_type = "classifier"
-    mlp.fit(x_train_p, y_train_p.values.ravel())
+    if 'rf' in models:
+        rf = RandomForestClassifier(n_estimators=1000)
+        rf.fit(x_train_p, y_train_p.values.ravel())
+        sigmoidRF = CalibratedClassifierCV(RandomForestClassifier(n_estimators=1000), cv=5, method='sigmoid')
+        sigmoidRF.fit(x_train_p, y_train_p.values.ravel())
+        estimators.append(('rf', sigmoidRF))
 
-    rf = RandomForestClassifier(n_estimators=1000)
-    rf.fit(x_train_p, y_train_p.values.ravel())
-    sigmoidRF = CalibratedClassifierCV(RandomForestClassifier(n_estimators=1000), cv=5, method='sigmoid')
-    sigmoidRF.fit(x_train_p, y_train_p.values.ravel())
+    if 'mlp' in models:
+        def create_mlp():
+            mlp = Sequential()
+            mlp.add(Dense(60, input_dim=len(x_train_p.columns), activation='relu'))
+            mlp.add(Dropout(0.2))
+            mlp.add(Dense(30, input_dim=60, activation='relu'))
+            mlp.add(Dropout(0.2))
+            mlp.add(Dense(1, activation='sigmoid'))
+            mlp.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+            return mlp
 
-    lr = LogisticRegression(C=1.)
-    lr.fit(x_train_p, y_train_p.values.ravel())
-
-    # create a dictionary of our models
-    estimators = [('lr', lr), ('rf', sigmoidRF), ('mlp', mlp)]
+        mlp = KerasClassifier(build_fn=create_mlp, epochs=100, batch_size=64, verbose=0)
+        mlp._estimator_type = "classifier"
+        mlp.fit(x_train_p, y_train_p.values.ravel())
+        estimators.append(('mlp', mlp))
+    
+    models_dict = dict()
+    for model_name, clf in estimators:
+        models_dict[model_name] = clf
+    
     # create our voting classifier, inputting our models
     ensemble = VotingClassifier(estimators, voting='soft')
     ensemble._estimator_type = "classifier"
     ensemble.fit(x_train_p, y_train_p.values.ravel())
-
-    return {'mlp': mlp, 'rf': sigmoidRF, 'lr': lr, 'ensemble': ensemble}
+    models_dict['ensemble'] = ensemble
+    
+    return models_dict
 
 
 def plot_stats(dfplot, save=False):

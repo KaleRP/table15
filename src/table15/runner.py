@@ -16,26 +16,27 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES')
     policy = plutils.get_from_configs(configs, 'POLICY')
-    features =  plutils.get_from_configs(configs, 'FEATURES')
+    features = plutils.get_from_configs(configs, 'FEATURES')
+    models = plutils.get_from_configs(configs, 'MODELS')
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
     print(y_train_p.shape)
 
     # Train models
-    models = pm.pima_models(x_train_p, y_train_p)
+    models_dict = pm.pima_models(x_train_p, y_train_p, models)
 
     print('getting magecs...')
     with multiprocessing.Manager() as manager:
         run_dfs = manager.dict()
         processes = []
         keys = []
-        for model in models.keys():
+        for model in models_dict.keys():
             for baseline in baselines:
                 print(baseline)
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
-                clf = models[model]
+                clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
                 p = multiprocessing.Process(name=key, 
