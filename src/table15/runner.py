@@ -43,13 +43,13 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
                 # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
-                processes[i] = multiprocessing.Process(name=key,
+                p = multiprocessing.Process(name=key,
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
-                processes[i].start()
+                processes.append(p)
 
-        # for p in processes:
-        #     p.start()
+        for p in processes:
+            p.start()
         for process in processes:
             process.join()
     baseline_runs = defaultdict(list)
