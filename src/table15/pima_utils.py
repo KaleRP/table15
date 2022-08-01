@@ -11,7 +11,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
-import magec_utils as mg
+from . import magec_utils as mg
 from . import pipeline_utils as plutils
 import os
 
