@@ -11,7 +11,7 @@ import warnings
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
     warnings.filterwarnings('ignore')
-    set_start_method("spawn")
+    # set_start_method("spawn")
 
     print('This is Version: 0.0.5')
 
