@@ -50,36 +50,36 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
         for p in processes:
             p.start()
-    for process in processes:
-        process.join()
-    baseline_runs = defaultdict(list)
-    print('********************')
-    print(run_dfs.keys())
-    keys = sorted(keys)
-    print(keys)
-    for key in keys:
-        baseline = key.split('_')[1]
-        if baseline[0] == 'p':
-            baseline = int(baseline[1:]) / 100
-        else:
-            baseline = int(baseline)
-        yaml_check = baseline
-        if baseline == 0:
-            yaml_check = None
-        assert yaml_check in baselines
-        baseline_runs[baseline].append(run_dfs[key])
+        for process in processes:
+            process.join()
+        baseline_runs = defaultdict(list)
+        print('********************')
+        print(run_dfs.keys())
+        keys = sorted(keys)
+        print(keys)
+        for key in keys:
+            baseline = key.split('_')[1]
+            if baseline[0] == 'p':
+                baseline = int(baseline[1:]) / 100
+            else:
+                baseline = int(baseline)
+            yaml_check = baseline
+            if baseline == 0:
+                yaml_check = None
+            assert yaml_check in baselines
+            baseline_runs[baseline].append(run_dfs[key])
 
-    print('***********')
-    print(baseline_runs.keys())
+        print('***********')
+        print(baseline_runs.keys())
 
     
-    joined = mg.magec_models(*run_dfs.values(),
-                            Xdata=x_validation_p, 
-                            Ydata=y_validation_p, 
-                            features=features)
-    all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
-    scores_df = agg_scores(all_ranked_df, policy=policy)
-    return scores_df, joined
+        joined = mg.magec_models(*run_dfs.values(),
+                                Xdata=x_validation_p,
+                                Ydata=y_validation_p,
+                                features=features)
+        all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
+        scores_df = agg_scores(all_ranked_df, policy=policy)
+        return scores_df, joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
