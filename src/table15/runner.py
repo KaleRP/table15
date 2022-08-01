@@ -33,25 +33,25 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         run_dfs = manager.dict()
         processes = []
         keys = []
+        i = -1
         for baseline in baselines:
             for model in models_dict.keys():
+                i += 1
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
                 clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
                 # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
-                p = multiprocessing.Process(name=key, 
+                processes[i] = multiprocessing.Process(name=key,
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
-                p.start()
-                time.sleep(30)
-                processes.append(p)
-        
+                processes[i].start()
+
         # for p in processes:
         #     p.start()
-        for p in processes:
-            p.join()
+        for process in processes:
+            process.join()
     baseline_runs = defaultdict(list)
     print('********************')
     print(run_dfs.keys())
