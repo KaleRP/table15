@@ -45,7 +45,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
                 p = multiprocessing.Process(name=key,
                                             target=run_magecs, 
-                                            args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline))
+                                            args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
                 processes.append(p)
 
         for p in processes:
