@@ -65,11 +65,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 yaml_check = None
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
-
-        print('***********')
-        print(baseline_runs.keys())
         
         baseline_scores = {}
+        all_joined = {}
         for baseline, model_runs in baseline_runs.items():
             baseline_joined = mg.magec_models(*model_runs,
                                 Xdata=x_validation_p,
@@ -78,14 +76,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
             baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy)
 
+            all_joined[baseline] = baseline_joined
             baseline_scores[baseline] = baseline_scores_df
 
-    
-        
-        
-
-        scores_df=None
-        return scores_df, baseline_scores
+        return baseline_scores, all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
