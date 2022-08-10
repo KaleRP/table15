@@ -903,7 +903,7 @@ def magec_scores(magecs_feats,
 
             probs_score_col = score_cols[1]
             probs_score = row[probs_score_col]
-            probs_score = scoring(probs_score_col)
+            probs_score = scoring(probs_score)
 
             if use_weights:
                 if weights[model] is not None:
