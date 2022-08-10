@@ -792,6 +792,7 @@ def name_matching(cols, models):
                 col_names[prefix] = [col]
     # magec/feat column names come in pairs
     magecs_feats = dict()
+    print(col_names)
     for model, cols in col_names.items():
         feat2magic = dict()
         # assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
