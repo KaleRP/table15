@@ -795,8 +795,6 @@ def name_matching(cols, models):
     for model, cols in col_names.items():
         feat2magic = dict()
         # assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
-        print(2)
-        print(cols)
         if len(cols) == 2:
             if 'feat' in cols[0] and 'magec' in cols[1]:
                 feat2magic[cols[0]] = cols[1]
@@ -817,8 +815,8 @@ def name_matching(cols, models):
             feats = sorted([col[::-1] for col in cols if 'feat' in col])
             # reversed names sorted (e.g. 1_cegam_plm)
             magecs = sorted([col[::-1] for col in cols if 'magec' in col])
-            assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
-            assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
+            # assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
+            # assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
             for i, feat in enumerate(feats):
                 feat2magic[feat[::-1]] = magecs[i][::-1]
         # return dictionary with magec feature column names and magec value column name for every model
