@@ -73,12 +73,12 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         print(baseline_runs.keys())
         
         all_joined = {}
-        for baseline, model_runs in baeline_runs.items():
+        for baseline, model_runs in baseline_runs.items():
             baseline_joined = mg.magec_models(*model_runs,
                                 Xdata=x_validation_p,
                                 Ydata=y_validation_p,
                                 features=features)
-            all_joined[rank] = baseline_joined
+            all_joined[baseline] = baseline_joined
 
     
         
