@@ -4,7 +4,7 @@ CONFIGS:
   FEATURES: ['BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness']
   POLICY: 'mean'
   # MODELS: ('mlp', 'rf', 'lr')
-  MODELS: ['rf']
+  MODELS: ['rf', 'lr']
   # BASELINES: [None, 0.5, 0.7, 0.9]
   # BASELINES: [null, 0.5]
 
