@@ -783,7 +783,7 @@ def magec_consensus(magec_ranks,
 def name_matching(cols, models):
     # get all magec column names
     col_names = dict()
-    for col in cols:
+    for col in sorted(cols):
         prefix = col.split('_')[0]
         if prefix in models:
             if prefix in col_names:
@@ -792,7 +792,6 @@ def name_matching(cols, models):
                 col_names[prefix] = [col]
     # magec/feat column names come in pairs
     magecs_feats = dict()
-    print(col_names)
     for model, cols in col_names.items():
         feat2magic = dict()
         # assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
@@ -815,11 +814,12 @@ def name_matching(cols, models):
             # reversed names sorted (e.g. 1_taef_plm)
             feats = sorted([col[::-1] for col in cols if 'feat' in col])
             # reversed names sorted (e.g. 1_cegam_plm)
-            magecs = sorted([col[::-1] for col in cols if 'magec' in col])
+            mageclogits = sorted([col[::-1] for col in cols if 'mageclogits' in col])
+            magecprobs = sorted([col[::-1] for col in cols if 'magecprobs' in col])
             # assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
             # assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
             for i, feat in enumerate(feats):
-                feat2magic[feat[::-1]] = magecs[i][::-1]
+                feat2magic[feat[::-1]] = (mageclogits[i][::-1], magecprobs[i][::-1])
         # return dictionary with magec feature column names and magec value column name for every model
         magecs_feats[model] = feat2magic
     return magecs_feats
@@ -887,7 +887,6 @@ def magec_scores(magecs_feats,
     """
 
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
-    print(magecs_feats)
     consensus = {}
     scores = {'logits': {}, 'probs': {}}
     if use_weights:
@@ -897,10 +896,13 @@ def magec_scores(magecs_feats,
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
-            print(row[score_cols])
-            logits_score, probs_score = row[score_cols]
+            logits_score_col = score_cols[0]
+            logits_score = row[logits_score_col]
             logits_score = scoring(logits_score)
-            probs_score = scoring(probs_score)
+
+            probs_score_col = score_cols[1]
+            probs_score = row[probs_score_col]
+            probs_score = scoring(probs_score_col)
 
             if use_weights:
                 if weights[model] is not None:
