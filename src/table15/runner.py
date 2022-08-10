@@ -91,6 +91,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     cols = list(set(ranked_df.columns) - {'case', 'timepoint', 'Outcome'})
     magecs_feats = mg.name_matching(cols, models)
+    print(magecs_feats)
     
     out = list()
     for (idx, row) in ranked_df.iterrows():

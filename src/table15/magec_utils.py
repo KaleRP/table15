@@ -885,7 +885,6 @@ def magec_scores(magecs_feats,
      'mlp': {'mlp_feat_1': 'mlp_magec_1', 'mlp_feat_2': 'mlp_magec_2'},
      'lr': {'lr_feat_1': 'lr_magec_1', 'lr_feat_2': 'lr_magec_2'}}
     """
-
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
     consensus = {}
     scores = {'logits': {}, 'probs': {}}
@@ -920,6 +919,7 @@ def magec_scores(magecs_feats,
         print(scores)
         for type, col_vals in scores.items():
             for feat, score in col_vals.items():
+                print(score)
                 score /= len(consensus[feat])
     return scores
 
