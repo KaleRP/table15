@@ -13,7 +13,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     warnings.filterwarnings('ignore')
     # set_start_method("spawn")
 
-    print('This is Version: 0.0.5')
+    print('This is Version: 0.0.6')
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES')
@@ -78,7 +78,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
             baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy)
 
-            baseline_scores[baseline] = baseline_baseline_scores_dfjoined
+            baseline_scores[baseline] = baseline_scores_df
 
     
         
