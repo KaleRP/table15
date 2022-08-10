@@ -314,11 +314,15 @@ def z_perturbation(model, target_data,
             logit_orig = base['logit_orig']
             logit_perturb = perturb['logit_perturb']
             logit_diff = score_comparison(logit_orig, logit_perturb)
+            # probs
+            probs_orig = base['probs_orig']
+            probs_perturb = perturb['probs_perturb']
+            probs_diff = score_comparison(probs_orig, probs_perturb)
             # store
             idx = target_data.index.get_level_values('timepoint') == tt
-            prob_deltas_per_cell.loc[idx, var_name] = logit_diff
-            prob_deltas_per_cell.loc[idx, 'perturb_{}_prob'.format(var_name)] = perturb['probs_perturb']
-            prob_deltas_per_cell.loc[idx, 'orig_prob'] = base['probs_orig']
+            prob_deltas_per_cell.loc[idx, '{}_probs'.format(var_name)] = probs_diff
+            prob_deltas_per_cell.loc[idx, 'perturb_{}_prob'.format(var_name)] = probs_perturb
+            prob_deltas_per_cell.loc[idx, 'orig_prob'] = probs_orig
 
     return prob_deltas_per_cell.astype(float)
 
@@ -383,13 +387,15 @@ def normalize_magecs(magecs,
         cols = [c for c in magecs.columns if c.startswith(prefix)]
     else:
         cols = [create_magec_col(m_prefix(magecs, feat, model_name), feat) for feat in features]
-    cols_test = [model_name + '_' + feat + '_test' for feat in features]
+    m_cols = [col for col in cols if col[:-5] != 'probs']
+    m_p_cols = [col for col in cols if col[:-5] == 'probs']
 
     for (idx, row) in out.iterrows():
-        norm = np.linalg.norm(row.loc[cols].values)
-        for col in cols:
-            out[model_name + '_' + col + '_test'] = out[col]
-        out.loc[idx, cols] = out.loc[idx, cols] / norm
+        norm_m = np.linalg.norm(row.loc[m_cols].values)
+        out.loc[idx, m_cols] = out.loc[idx, m_cols] / norm_m
+
+        norm_m_p = np.linalg.norm(row.loc[m_p_cols].values)
+        out.loc[idx, m_p_cols] = out.loc[idx, m_p_cols] / norm_m_p
     return out
 
 
@@ -421,10 +427,10 @@ def magec_cols(magec, features):
     orig_prob_col = [col for col in all_cols if col.startswith('orig_prob_')]
     jcols = ['case', 'timepoint']
     m_cols = [col for col in all_cols if '_'.join(col.split('_')[1:]) in features]
+    m_p_cols = [col for col in all_cols if '_'.join(col.split('_')[1:-1]) in features and col.split('_')[-1] == 'probs']
     prob_cols = [col for col in all_cols if col.startswith('perturb_') and
                  col[8:].split('_prob_')[0] in features]
-    test_cols = [col for col in all_cols if col[-5:] == '_test']
-    cols = jcols + m_cols + prob_cols + orig_prob_col + test_cols
+    cols = jcols + m_cols + m_p_cols + prob_cols + orig_prob_col
     return jcols, cols
 
 
