@@ -917,6 +917,7 @@ def magec_scores(magecs_feats,
                 scores['probs'][feat] = probs_score
                 consensus[feat] = [model]
     if policy == 'mean':
+        print(scores)
         for type, col_vals in scores.items():
             for feat, score in col_vals.items():
                 score /= len(consensus[feat])
