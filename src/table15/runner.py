@@ -71,16 +71,22 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
         print('***********')
         print(baseline_runs.keys())
-
-    
-        joined = mg.magec_models(*baseline_runs.values(),
+        
+        all_joined = {}
+        for baseline, model_runs in baeline_runs.items():
+            baseline_joined = mg.magec_models(*model_runs,
                                 Xdata=x_validation_p,
                                 Ydata=y_validation_p,
                                 features=features)
+            all_joined[rank] = baseline_joined
+
+    
+        
         # all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
         # scores_df = agg_scores(all_ranked_df, policy=policy)
+
         scores_df=None
-        return scores_df, joined
+        return scores_df, all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
