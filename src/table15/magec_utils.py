@@ -442,8 +442,6 @@ def magec_models(*magecs, **kwargs):
         _, cols = magec_cols(mgc, features)
         mgc = mgc[cols]
         magec = magec.merge(mgc, on=jcols)
-    print('cols)')
-    print(magec.columns)
     return magec
 
 
@@ -881,10 +879,10 @@ def magec_scores(magecs_feats,
                     score *= weights[model]
             if feat in scores:
                 scores[feat] += score
-                consensus[feat].add(model)
+                consensus[feat].append(model)
             else:
                 scores[feat] = score
-                consensus[feat] = {model}
+                consensus[feat] = [model]
     if policy == 'mean':
         for feat, score in scores.items():
             score /= len(consensus[feat])
