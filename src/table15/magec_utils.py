@@ -888,6 +888,7 @@ def magec_scores(magecs_feats,
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
     consensus = {}
     scores = {'logits': {}, 'probs': {}}
+    print(row)
     if use_weights:
         assert sorted(weights.keys()) == sorted(magecs_feats.keys())
     for model, feat_dict in magecs_feats.items():
