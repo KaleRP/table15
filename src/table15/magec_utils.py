@@ -486,12 +486,14 @@ def magec_rank(magecs,
                 feat = create_magec_col(model, col)
                 assert feat in row, "feature {} not in magecs".format(feat)
                 magec = row[feat]
+                magec_prob = [feat+'_prob']
                 # we are using a priority queue for the magec coefficients
                 # heapq is a min-pq, we are reversing the sign so that we can use a max-pq
+                metadata = (col, magec_prob)
                 if len(model_ranks[model]) < rank:
-                    heapq.heappush(model_ranks[model], (-magec, col))
+                    heapq.heappush(model_ranks[model], (-magec, metadata))
                 else:
-                    _ = heapq.heappushpop(model_ranks[model], (-magec, col))
+                    _ = heapq.heappushpop(model_ranks[model], (-magec, metadata))
                     # store magecs (top-N where N=rank) for each key ('case/timepoint')
         ranks[key] = model_ranks
         # create a Pandas dataframe with all magecs for a 'case/timepoint'
@@ -510,7 +512,8 @@ def magec_rank(magecs,
                 columns = ['case', 'timepoint']
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
-                magec, feat = heapq.heappop(v[model])
+                magec, metadata = heapq.heappop(v[model])
+                feat, magec_prob = metadata
                 # Commenting out below code keeps all values, not just "positive" values
                 # if magec < 0:  # negative magecs are originally positive magecs and are filtered out
                 #     l.append(None)
@@ -518,6 +521,7 @@ def magec_rank(magecs,
                 # else:
                 l.append(-magec)  # retrieve original magec sign
                 l.append(feat)
+                l.append(magec_prob)
         out.append(l)
 
     out = pd.DataFrame.from_records(out)
@@ -525,13 +529,13 @@ def magec_rank(magecs,
     for model in models:
         if rank == 1:
             columns.append(model + '_mageclogits')
-            columns.append(model + '_magecprobs')
             columns.append(model + '_feat')
+            columns.append(model + '_magecprobs')
         else:
             for r in range(rank, 0, -1):
                 columns.append(model + '_mageclogits_{}'.format(r))
-                columns.append(model + '_magecprobs_{}'.format(r))
                 columns.append(model + '_feat_{}'.format(r))
+                columns.append(model + '_magecprobs_{}'.format(r))
     out.columns = columns
     out['case'] = out['case'].astype(magecs['case'].dtype)
     out['timepoint'] = out['timepoint'].astype(magecs['timepoint'].dtype)
