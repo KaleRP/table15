@@ -524,11 +524,13 @@ def magec_rank(magecs,
     # create dataframe's columns
     for model in models:
         if rank == 1:
-            columns.append(model + '_magec')
+            columns.append(model + '_mageclogits')
+            columns.append(model + '_magecprobs')
             columns.append(model + '_feat')
         else:
             for r in range(rank, 0, -1):
-                columns.append(model + '_magec_{}'.format(r))
+                columns.append(model + '_mageclogits_{}'.format(r))
+                columns.append(model + '_magecprobs_{}'.format(r))
                 columns.append(model + '_feat_{}'.format(r))
     out.columns = columns
     out['case'] = out['case'].astype(magecs['case'].dtype)

@@ -55,6 +55,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             p.start()
         for process in processes:
             process.join()
+        
+        # Def this process:
         baseline_runs = defaultdict(list)
         keys = sorted(keys)
         for key in keys:
@@ -69,6 +71,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
         
+        # Def this process:
         baseline_scores = {}
         all_joined = {}
         for baseline, model_runs in baseline_runs.items():
@@ -77,7 +80,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                                 Ydata=y_validation_p,
                                 features=features)
             baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
-            baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy)
+            baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
 
             all_joined[baseline] = baseline_joined
             baseline_scores[baseline] = baseline_scores_df
