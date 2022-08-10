@@ -53,10 +53,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for process in processes:
             process.join()
         baseline_runs = defaultdict(list)
-        print('********************')
-        print(run_dfs.keys())
         keys = sorted(keys)
-        print(keys)
         for key in keys:
             baseline = key.split('_')[1]
             if baseline[0] == 'p':
@@ -72,21 +69,23 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         print('***********')
         print(baseline_runs.keys())
         
-        all_joined = {}
+        baseline_scores = {}
         for baseline, model_runs in baseline_runs.items():
             baseline_joined = mg.magec_models(*model_runs,
                                 Xdata=x_validation_p,
                                 Ydata=y_validation_p,
                                 features=features)
-            all_joined[baseline] = baseline_joined
+            baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+            baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy)
+
+            baseline_scores[baseline] = baseline_baseline_scores_dfjoined
 
     
         
-        # all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
-        # scores_df = agg_scores(all_ranked_df, policy=policy)
+        
 
         scores_df=None
-        return scores_df, all_joined
+        return scores_df, baseline_scores
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
