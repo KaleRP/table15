@@ -422,7 +422,8 @@ def magec_cols(magec, features):
     m_cols = [col for col in all_cols if '_'.join(col.split('_')[1:]) in features]
     prob_cols = [col for col in all_cols if col.startswith('perturb_') and
                  col[8:].split('_prob_')[0] in features]
-    cols = jcols + m_cols + prob_cols + orig_prob_col
+    test_cols = [col for col in cols if col[-5:] == '_test']
+    cols = jcols + m_cols + prob_cols + orig_prob_col + test_cols
     return jcols, cols
 
 
