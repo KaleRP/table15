@@ -73,7 +73,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         print(baseline_runs.keys())
 
     
-        joined = mg.magec_models(*run_dfs.values(),
+        joined = mg.magec_models(*baseline_runs.values(),
                                 Xdata=x_validation_p,
                                 Ydata=y_validation_p,
                                 features=features)
