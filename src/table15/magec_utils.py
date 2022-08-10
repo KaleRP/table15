@@ -888,27 +888,34 @@ def magec_scores(magecs_feats,
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
 
     consensus = {}
-    scores = {}
+    scores = {'logits': {}, 'probs': {}}
     if use_weights:
         assert sorted(weights.keys()) == sorted(magecs_feats.keys())
     for model, feat_dict in magecs_feats.items():
-        for feat_col, score_col in feat_dict.items():
+        for feat_col, score_cols in feat_dict.items():
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
-            score = scoring(row[score_col])
+            logits_score, probs_score = row[score_cols]
+            logits_score = scoring(logits_score)
+            probs_score = scoring(probs_score)
+
             if use_weights:
                 if weights[model] is not None:
-                    score *= weights[model]
+                    logits_score *= weights[model]
+                    probs_score *= weights[model]
             if feat in scores:
-                scores[feat] += score
+                scores['logits'][feat] += logits_score
+                scores['probs'][feat] += probs_score
                 consensus[feat].append(model)
             else:
-                scores[feat] = score
+                scores['logits'][feat] = logits_score
+                scores['probs'][feat] = probs_score
                 consensus[feat] = [model]
     if policy == 'mean':
-        for feat, score in scores.items():
-            score /= len(consensus[feat])
+        for type, col_vals in scores.items():
+            for feat, score in col_vals.items():
+                score /= len(consensus[feat])
     return scores
 
 
