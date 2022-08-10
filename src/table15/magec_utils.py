@@ -320,6 +320,7 @@ def z_perturbation(model, target_data,
             probs_diff = score_comparison(probs_orig, probs_perturb)
             # store
             idx = target_data.index.get_level_values('timepoint') == tt
+            prob_deltas_per_cell.loc[idx, var_name] = logit_diff
             prob_deltas_per_cell.loc[idx, '{}_probs'.format(var_name)] = probs_diff
             prob_deltas_per_cell.loc[idx, 'perturb_{}_prob'.format(var_name)] = probs_perturb
             prob_deltas_per_cell.loc[idx, 'orig_prob'] = probs_orig
