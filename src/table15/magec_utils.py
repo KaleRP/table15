@@ -458,8 +458,6 @@ def magec_rank(magecs,
     """
     ranks = {}
 
-    print('columns:', magecs.columns)
-
     # each row contains all MAgEC coefficients for a 'case/timepoint'
     for (idx, row) in magecs.iterrows():
         model_ranks = {}
@@ -803,7 +801,7 @@ def name_matching(cols, models):
 
 def magec_winner(magecs_feats,
                  row,
-                 scoring=lambda w: abs(w),
+                 scoring=lambda w: w,
                  use_weights=False,
                  weights={'rf': None, 'mlp': None, 'lr': None},
                  policy='sum'):
