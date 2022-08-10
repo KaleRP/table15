@@ -389,7 +389,6 @@ def normalize_magecs(magecs,
         cols = [create_magec_col(m_prefix(magecs, feat, model_name), feat) for feat in features]
     m_cols = [col for col in cols if col[:-5] != 'probs']
     m_p_cols = [col for col in cols if col[:-5] == 'probs']
-    print(m_cols)
 
     for (idx, row) in out.iterrows():
         norm_m = np.linalg.norm(row.loc[m_cols].values)
