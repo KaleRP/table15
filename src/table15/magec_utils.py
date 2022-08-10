@@ -847,7 +847,7 @@ def magec_winner(magecs_feats,
 
 def magec_scores(magecs_feats,
                  row,
-                 scoring=lambda w: abs(w),
+                 scoring=lambda w: w,
                  use_weights=False,
                  weights={'rf': None, 'mlp': None, 'lr': None},
                  policy='sum'):
