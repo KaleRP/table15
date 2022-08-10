@@ -388,6 +388,10 @@ def normalize_magecs(magecs,
     for (idx, row) in out.iterrows():
         norm = np.linalg.norm(row.loc[cols].values)
         out.loc[idx, cols_test] = out.loc[idx, cols]
+        print(out.loc[idx, cols])
+        print(norm)
+        print(out.loc[idx, cols] / norm)
+        break
         out.loc[idx, cols] = out.loc[idx, cols] / norm
     return out
 
