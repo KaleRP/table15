@@ -486,7 +486,7 @@ def magec_rank(magecs,
                 feat = create_magec_col(model, col)
                 assert feat in row, "feature {} not in magecs".format(feat)
                 magec = row[feat]
-                magec_prob = [feat+'_prob']
+                magec_prob = row[feat+'_prob']
                 # we are using a priority queue for the magec coefficients
                 # heapq is a min-pq, we are reversing the sign so that we can use a max-pq
                 metadata = (col, magec_prob)
