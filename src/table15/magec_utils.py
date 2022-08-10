@@ -896,6 +896,7 @@ def magec_scores(magecs_feats,
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
+            print(row[score_cols])
             logits_score, probs_score = row[score_cols]
             logits_score = scoring(logits_score)
             probs_score = scoring(probs_score)
