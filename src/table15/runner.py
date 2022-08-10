@@ -77,8 +77,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                                 Xdata=x_validation_p,
                                 Ydata=y_validation_p,
                                 features=features)
-        all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
-        scores_df = agg_scores(all_ranked_df, policy=policy)
+        # all_ranked_df = mg.magec_rank(joined, rank=len(features), features=features, models=models)
+        # scores_df = agg_scores(all_ranked_df, policy=policy)
+        scores_df=None
         return scores_df, joined
 
 
