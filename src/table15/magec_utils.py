@@ -886,7 +886,7 @@ def magec_scores(magecs_feats,
     """
 
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
-
+    print(magecs_feats)
     consensus = {}
     scores = {'logits': {}, 'probs': {}}
     if use_weights:
