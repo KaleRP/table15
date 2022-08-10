@@ -794,7 +794,7 @@ def name_matching(cols, models):
     magecs_feats = dict()
     for model, cols in col_names.items():
         feat2magic = dict()
-        assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
+        # assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
         if len(cols) == 2:
             if 'feat' in cols[0] and 'magec' in cols[1]:
                 feat2magic[cols[0]] = cols[1]
