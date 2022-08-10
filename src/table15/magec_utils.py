@@ -886,7 +886,6 @@ def magec_scores(magecs_feats,
      'lr': {'lr_feat_1': 'lr_magec_1', 'lr_feat_2': 'lr_magec_2'}}
     """
     assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
-    print(row)
     consensus = {}
     scores = {'logits': {}, 'probs': {}}
     if use_weights:
@@ -896,7 +895,6 @@ def magec_scores(magecs_feats,
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
-            print(score_cols)
             logits_score_col = score_cols[0]
             logits_score = row[logits_score_col]
             logits_score = scoring(logits_score)
@@ -918,7 +916,6 @@ def magec_scores(magecs_feats,
                 scores['probs'][feat] = probs_score
                 consensus[feat] = [model]
     if policy == 'mean':
-        print(scores)
         for type, col_vals in scores.items():
             for feat, score in col_vals.items():
                 score /= len(consensus[feat])
