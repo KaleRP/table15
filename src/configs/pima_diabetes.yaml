@@ -4,7 +4,7 @@ CONFIGS:
   FEATURES: ['BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness']
   POLICY: 'mean'
   MODELS: ('mlp', 'rf')
-  BASELINES: [None, 0.5]
+  BASELINES: [None]
 
 HYPERPARAMS:
   RANDOM_SEED: 7
