@@ -80,15 +80,15 @@ def pima_data(configs):
     return pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p
 
 
-def create_mlp():
-            mlp = Sequential()
-            mlp.add(Dense(60, input_dim=len(x_train_p.columns), activation='relu'))
-            mlp.add(Dropout(0.2))
-            mlp.add(Dense(30, input_dim=60, activation='relu'))
-            mlp.add(Dropout(0.2))
-            mlp.add(Dense(1, activation='sigmoid'))
-            mlp.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-            return mlp
+def create_mlp(x_train_p):
+    mlp = Sequential()
+    mlp.add(Dense(60, input_dim=len(x_train_p.columns), activation='relu'))
+    mlp.add(Dropout(0.2))
+    mlp.add(Dense(30, input_dim=60, activation='relu'))
+    mlp.add(Dropout(0.2))
+    mlp.add(Dense(1, activation='sigmoid'))
+    mlp.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return mlp
 
 
 def pima_models(x_train_p, y_train_p, models):
@@ -113,7 +113,8 @@ def pima_models(x_train_p, y_train_p, models):
         estimators.append(('rf', sigmoidRF))
 
     if 'mlp' in models:
-        mlp = KerasClassifier(build_fn=create_mlp, epochs=100, batch_size=64, verbose=0)
+        params = {'x_train_p': x_train_p}
+        mlp = KerasClassifier(build_fn=create_mlp, sk_params=params epochs=100, batch_size=64, verbose=0)
         mlp._estimator_type = "classifier"
         mlp.fit(x_train_p, y_train_p.values.ravel())
         estimators.append(('mlp', mlp))
