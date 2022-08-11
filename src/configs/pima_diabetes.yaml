@@ -3,7 +3,7 @@ CONFIGS:
   EXCLUDE_COLS: ['Outcome', 'Pregnancies']
   FEATURES: ['BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness']
   POLICY: 'mean'
-  MODELS: ('mlp', 'rf')
+  MODELS: ('mlp')
   BASELINES: [None]
 
 HYPERPARAMS:
