@@ -114,7 +114,7 @@ def pima_models(x_train_p, y_train_p, models):
 
     if 'mlp' in models:
         params = {'x_train_p': x_train_p}
-        mlp = KerasClassifier(build_fn=create_mlp, sk_params=params, epochs=100, batch_size=64, verbose=0)
+        mlp = KerasClassifier(build_fn=create_mlp, epochs=100, batch_size=64, verbose=0)
         mlp._estimator_type = "classifier"
         mlp.fit(x_train_p, y_train_p.values.ravel())
         estimators.append(('mlp', mlp))
