@@ -33,13 +33,12 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     print('getting magecs...')
     with mp.Manager() as manager:
+        print('inside)')
         run_dfs = manager.dict()
         processes = []
         keys = []
-        i = -1
         for baseline in baselines:
             for model in models_dict.keys():
-                i += 1
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
                 clf = models_dict[model]
