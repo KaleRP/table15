@@ -3,8 +3,8 @@ CONFIGS:
   EXCLUDE_COLS: ['Outcome', 'Pregnancies']
   FEATURES: ['BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness']
   POLICY: 'mean'
-  MODELS: ('mlp', 'rf', 'lr')
-  BASELINES: [None, 0.5, 0.7, 0.9]
+  MODELS: ('mlp', 'rf')
+  BASELINES: [None, 0.5]
 
 HYPERPARAMS:
   RANDOM_SEED: 7
