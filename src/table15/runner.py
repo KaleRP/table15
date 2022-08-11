@@ -33,7 +33,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     print('getting magecs...')
     with mp.Manager() as manager:
-        print('inside)')
         run_dfs = manager.dict()
         processes = []
         keys = []
