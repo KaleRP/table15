@@ -31,6 +31,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     # Train models
     models_dict = pm.pima_models(x_train_p, y_train_p, models)
 
+    print(models_dict)
     del models_dict['ensemble']
 
     print('getting magecs...')
