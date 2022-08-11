@@ -1,6 +1,6 @@
 from email.mime import base
 import pandas as pd
-import multiprocessing
+import multiprocessing as mp
 from multiprocessing import set_start_method
 from . import magec_utils as mg
 from . import pima_utils as pm
@@ -11,7 +11,7 @@ import warnings
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
     warnings.filterwarnings('ignore')
-    # set_start_method("spawn")
+    set_start_method("spawn")
 
     print('This is Version: 0.0.7')
 
@@ -35,7 +35,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     del models_dict['ensemble']
 
     print('getting magecs...')
-    with multiprocessing.Manager() as manager:
+    with mp.Manager() as manager:
         run_dfs = manager.dict()
         processes = []
         keys = []
@@ -49,7 +49,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
                 # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
-                p = multiprocessing.Process(name=key,
+                p = mp.Process(name=key,
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
                 processes.append(p)
@@ -102,7 +102,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     return pd.DataFrame.from_records(out)
 
 def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
-    p_name = multiprocessing.current_process().name
+    p_name = mp.current_process().name
     print('Starting:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
