@@ -31,6 +31,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     # Train models
     models_dict = pm.pima_models(x_train_p, y_train_p, models)
 
+    del models_dict['ensemble']
+
     print('getting magecs...')
     with multiprocessing.Manager() as manager:
         run_dfs = manager.dict()
