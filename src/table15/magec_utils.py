@@ -484,10 +484,6 @@ def magec_rank(magecs,
             for model in models:
                 # each model should contain a corresponding magec
                 feat = create_magec_col(model, col)
-                print(model)
-                print(row)
-                print()
-                print(feat)
                 assert feat in row, "feature {} not in magecs".format(feat)
                 magec = row[feat]
                 magec_prob = row[feat+'_probs']
