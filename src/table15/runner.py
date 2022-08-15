@@ -101,7 +101,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     
     return pd.DataFrame.from_records(out)
 
-def     run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
+def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
     print(model_name)
     p_name = mp.current_process().name
     print('Starting:', p_name)
