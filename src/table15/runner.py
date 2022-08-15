@@ -88,7 +88,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             all_joined[baseline] = baseline_joined
             baseline_scores[baseline] = baseline_scores_df
 
-        return baseline_scores, all_joined
+        df_scores = pd.DataFrame.from_records(baseline_scores)
+
+        return df_scores, all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
