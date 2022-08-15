@@ -75,7 +75,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             baseline_runs[baseline].append(run_dfs[key])
         
         # Def this process:
-        baseline_scores = {}
+        baseline_to_scores_df = {}
         all_joined = {}
         for baseline, model_runs in baseline_runs.items():
             baseline_joined = mg.magec_models(*model_runs,
@@ -83,14 +83,12 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                                 Ydata=y_validation_p,
                                 features=features)
             baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
-            baseline_scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
+            scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
 
             all_joined[baseline] = baseline_joined
-            baseline_scores[baseline] = baseline_scores_df
+            baseline_to_scores_df[baseline] = scores_df
 
-        df_scores = pd.DataFrame.from_records(baseline_scores)
-
-        return df_scores, all_joined
+        return baseline_to_scores_df, all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
