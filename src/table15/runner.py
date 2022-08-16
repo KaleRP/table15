@@ -27,10 +27,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     if baselines is None:
         baselines = [None]
 
-    if None in baselines:
-        idx = baselines.index(None)
-        baselines[idx] = 0
-
     features = sorted(features)
     baselines = sorted(baselines)
 
@@ -77,6 +73,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             else:
                 baseline = int(baseline)
             yaml_check = baseline
+            if baseline == 0:
+                yaml_check = None
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
         
