@@ -88,7 +88,22 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             all_joined[baseline] = baseline_joined
             baseline_to_scores_df[baseline] = scores_df
 
-        return baseline_to_scores_df, all_joined
+        output_logits = {}
+        output_probs = {}
+
+        for baseline in baselines:
+            df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
+            base_logits_strings = get_string_repr(df_logits, features)
+            output_logits[baseline] = base_logits_strings
+
+            df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
+            base_probs_strings = get_string_repr(df_probs, features)
+            output_probs[baseline] = base_probs_strings
+
+        print(output_logits.head())
+        print(output_probs.head())
+
+        return (output_logits, output_probs), all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
@@ -115,3 +130,13 @@ def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, bas
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
     print('Exiting :', p_name)
     return_dict[p_name] = magecs
+
+
+def get_string_repr(df, feats):
+    base_strings = []
+    for feat in feats:
+        mean = round(df[feat].mean(), 4)
+        std = round(df[feat].std(), 4)
+        string_repr = f'{mean} +/- {std}'
+        base_strings.append(string_repr)
+    return base_strings
