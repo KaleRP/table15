@@ -96,6 +96,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         output_probs = {}
 
         for baseline in baselines:
+            if baseline is None:
+                baseline = 0
             df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
             base_logits_strings = get_string_repr(df_logits, features)
             output_logits[baseline] = base_logits_strings
