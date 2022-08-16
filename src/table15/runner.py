@@ -119,7 +119,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     df_logits_out[cols]
 
     df_probs_out = pd.DataFrame.from_records(output_probs)
-    df_logits_out['feature'] = features
+    df_probs_out['feature'] = features
     # re-order cols
     cols = ['feature'] + baselines
     df_probs_out[cols]
