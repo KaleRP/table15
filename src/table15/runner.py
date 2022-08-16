@@ -31,6 +31,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         idx = baselines.index(None)
         baselines[idx] = 0
 
+    features = sorted(features)
+    baselines = sorted(baselines)
+
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
     print(y_train_p.shape)
@@ -102,11 +105,23 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
             base_probs_strings = get_string_repr(df_probs, features)
             output_probs[baseline] = base_probs_strings
+        
+        df_logits_out = pd.DataFrame.from_records(output_logits)
+        df_logits_out['feature'] = features
+        # re-order cols
+        cols = ['feature'] + baselines
+        df_logits_out[cols]
 
-        print(output_logits.head())
-        print(output_probs.head())
+        df_probs_out = pd.DataFrame.from_records(output_probs)
+        df_logits_out['feature'] = features
+        # re-order cols
+        cols = ['feature'] + baselines
+        df_probs_out[cols]
 
-        return (output_logits, output_probs), all_joined
+        print(df_logits_out.head())
+        print(df_probs_out.head())
+
+        return (df_logits_out, df_probs_out), all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
