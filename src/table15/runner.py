@@ -66,6 +66,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         # Def this process:
         baseline_runs = defaultdict(list)
         keys = sorted(keys)
+        print(keys)
         for key in keys:
             baseline = key.split('_')[1]
             if baseline[0] == 'p':
