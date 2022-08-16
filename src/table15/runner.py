@@ -28,7 +28,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         baselines = [None]
 
     features = sorted(features)
-    baselines = sorted(baselines)
+    # baselines = sorted(baselines)
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
