@@ -23,8 +23,13 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     features = plutils.get_from_configs(configs, 'FEATURES')
     models = plutils.get_from_configs(configs, 'MODELS')
 
+    # Format check for Yaml configs
     if baselines is None:
         baselines = [None]
+
+    if None in baselines:
+        idx = baselines.index(None)
+        baselines[idx] = 0
 
     pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
     print(x_train_p.shape)
