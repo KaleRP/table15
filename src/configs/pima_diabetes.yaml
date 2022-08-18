@@ -9,3 +9,9 @@ CONFIGS:
 HYPERPARAMS:
   RANDOM_SEED: 7
   TEST_SIZE: 0.2
+
+FEATURES:
+  NUMERICAL: ['BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness']
+  CATEGORICAL: []
+  BINARY: []
+  

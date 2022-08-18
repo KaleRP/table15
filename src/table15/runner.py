@@ -18,29 +18,19 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     print('This is Version: 0.0.7')
 
     configs = plutils.yaml_parser(configs_path)
-    baselines = plutils.get_from_configs(configs, 'BASELINES')
-    policy = plutils.get_from_configs(configs, 'POLICY')
-    features = plutils.get_from_configs(configs, 'FEATURES')
-    models = plutils.get_from_configs(configs, 'MODELS')
 
     # Format check for Yaml configs
     if baselines is None:
         baselines = [None]
 
-    features = sorted(features)
-    # baselines = sorted(baselines)
-
-    pima, x_train, x_validation, stsc, x_train_p, x_validation_p, y_train_p, y_validation_p = pm.pima_data(configs)
-    print(x_train_p.shape)
-    print(y_train_p.shape)
+    df, features, x_train_p, x_validation_p, y_train_p, y_validation_p = plutils.generate_data(configs)
+    print('x_train.shape:', x_train_p.shape)
+    print('y_train.shape:', y_train_p.shape)
 
     # Train models
-    models_dict = pm.pima_models(x_train_p, y_train_p, models)
-
-    if 'ensemble' in models_dict:
-        models.append('ensemble')
-
+    models_dict = plutils.train_models(x_train_p, y_train_p, configs)
     print('getting magecs...')
+
     with mp.Manager() as manager:
         run_dfs = manager.dict()
         processes = []
@@ -52,7 +42,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
-                # run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline)
                 p = mp.Process(name=key,
                                             target=run_magecs, 
                                             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
