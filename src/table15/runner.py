@@ -18,10 +18,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     print('This is Version: 0.0.7')
 
     configs = plutils.yaml_parser(configs_path)
-
-    # Format check for Yaml configs
-    if baselines is None:
-        baselines = [None]
+    baselines = plutils.get_from_configs('BASELINES', param_type='CONFIGS')
 
     df, features, x_train_p, x_validation_p, y_train_p, y_validation_p = plutils.generate_data(configs)
     print('x_train.shape:', x_train_p.shape)
@@ -29,8 +26,12 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     # Train models
     models_dict = plutils.train_models(x_train_p, y_train_p, configs)
-    print('getting magecs...')
+    
+    # Format check for Yaml configs
+    if baselines is None:
+        baselines = [None]
 
+    print('getting magecs...')
     with mp.Manager() as manager:
         run_dfs = manager.dict()
         processes = []
