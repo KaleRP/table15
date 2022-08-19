@@ -45,6 +45,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
+                print('in1')
                 p = mp.Process(name=key, target=run_magecs, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
                 processes.append(p)
@@ -54,21 +55,21 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for process in processes:
             process.join()
         
-    # TODO: Def this process:
-    baseline_runs = defaultdict(list)
-    keys = sorted(keys)
-    print(features)
-    for key in keys:
-        baseline = key.split('_')[1]
-        if baseline[0] == 'p':
-            baseline = int(baseline[1:]) / 100
-        else:
-            baseline = int(baseline)
-        yaml_check = baseline
-        if baseline == 0:
-            yaml_check = None
-        assert yaml_check in baselines
-        baseline_runs[baseline].append(run_dfs[key])
+        # TODO: Def this process:
+        baseline_runs = defaultdict(list)
+        keys = sorted(keys)
+        print(features)
+        for key in keys:
+            baseline = key.split('_')[1]
+            if baseline[0] == 'p':
+                baseline = int(baseline[1:]) / 100
+            else:
+                baseline = int(baseline)
+            yaml_check = baseline
+            if baseline == 0:
+                yaml_check = None
+            assert yaml_check in baselines
+            baseline_runs[baseline].append(run_dfs[key])
     
     # TODO: Def this process:
     baseline_to_scores_df = {}
@@ -132,6 +133,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     return pd.DataFrame.from_records(out)
 
 def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
+    print('in2')
     print(model_name)   
     p_name = mp.current_process().name
     print('Starting:', p_name)
