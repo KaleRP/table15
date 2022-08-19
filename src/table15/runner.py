@@ -53,8 +53,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 processes.append(p)
     
         for p in processes:
-            print(p)
             p.start()
+            print(p)
         for p in processes:
             p.join()
 
