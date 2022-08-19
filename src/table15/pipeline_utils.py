@@ -147,9 +147,8 @@ def train_models(x_train_p, y_train_p, configs):
         ensemble = VotingClassifier(estimators, voting='soft')
         ensemble._estimator_type = "classifier"
         ensemble.fit(x_train_p, y_train_p.values.ravel())
-        models_dict['ensemble'] = ensemble
         estimators.append(('ensemble', ensemble))
-
+    
     models_dict = dict()
     for model_name, clf in estimators:
         models_dict[model_name] = clf
