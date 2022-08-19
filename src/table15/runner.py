@@ -59,6 +59,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     #         p.join()
 
     # TODO: fix multiprocessing
+    run_dfs = dict()
     keys = []
     for baseline in baselines:
         print(models_dict)
