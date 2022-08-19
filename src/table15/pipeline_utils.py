@@ -118,7 +118,7 @@ def train_models(x_train_p, y_train_p, configs):
     :param y_train_p:
     :return:
     """
-    models = get_from_configs(configs, 'RANDOM_SEED', param_type='HYPERPARAMS')
+    models = get_from_configs(configs, 'MODELS', param_type='CONFIGS')
     use_ensemble = get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
 
     estimators = list()
