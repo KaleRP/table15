@@ -48,12 +48,14 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 print('in1')
                 p = mp.Process(name=key, target=run_magecs, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
-                processes.append(p)
+                # processes.append(p)
+                p.start()
+                p.join()
 
-        for p in processes:
-            p.start()
-        for process in processes:
-            process.join()
+        # for p in processes:
+        #     p.start()
+        # for process in processes:
+        #     process.join()
         
         # TODO: Def this process:
         baseline_runs = defaultdict(list)
