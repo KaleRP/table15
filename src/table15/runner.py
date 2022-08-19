@@ -171,9 +171,9 @@ def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
     else:
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline)
-    print('Magecs for {} computed...'.format(p_name))
+    print('Magecs for {} computed...'.format(key))
     magecs = mg.normalize_magecs(magecs, features=features, model_name=model_name)
-    print('Magecs for {} normalized...'.format(p_name))
+    print('Magecs for {} normalized...'.format(key))
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
     print('Exiting :', key)
     return_dict[key] = magecs
