@@ -45,9 +45,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
-                p = mp.Process(name=key,
-                                            target=run_magecs, 
-                                            args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
+                p = mp.Process(name=key, target=run_magecs, 
+                    args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
                 processes.append(p)
 
         for p in processes:
@@ -55,35 +54,35 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for process in processes:
             process.join()
         
-        # Def this process:
-        baseline_runs = defaultdict(list)
-        keys = sorted(keys)
-        print(features)
-        for key in keys:
-            baseline = key.split('_')[1]
-            if baseline[0] == 'p':
-                baseline = int(baseline[1:]) / 100
-            else:
-                baseline = int(baseline)
-            yaml_check = baseline
-            if baseline == 0:
-                yaml_check = None
-            assert yaml_check in baselines
-            baseline_runs[baseline].append(run_dfs[key])
-        
-        # Def this process:
-        baseline_to_scores_df = {}
-        all_joined = {}
-        for baseline, model_runs in baseline_runs.items():
-            baseline_joined = mg.magec_models(*model_runs,
-                                Xdata=x_validation_p,
-                                Ydata=y_validation_p,
-                                features=features)
-            baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
-            scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
+    # TODO: Def this process:
+    baseline_runs = defaultdict(list)
+    keys = sorted(keys)
+    print(features)
+    for key in keys:
+        baseline = key.split('_')[1]
+        if baseline[0] == 'p':
+            baseline = int(baseline[1:]) / 100
+        else:
+            baseline = int(baseline)
+        yaml_check = baseline
+        if baseline == 0:
+            yaml_check = None
+        assert yaml_check in baselines
+        baseline_runs[baseline].append(run_dfs[key])
+    
+    # TODO: Def this process:
+    baseline_to_scores_df = {}
+    all_joined = {}
+    for baseline, model_runs in baseline_runs.items():
+        baseline_joined = mg.magec_models(*model_runs,
+                            Xdata=x_validation_p,
+                            Ydata=y_validation_p,
+                            features=features)
+        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+        scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
 
-            all_joined[baseline] = baseline_joined
-            baseline_to_scores_df[baseline] = scores_df
+        all_joined[baseline] = baseline_joined
+        baseline_to_scores_df[baseline] = scores_df
 
     output_logits = {}
     output_probs = {}
@@ -133,7 +132,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     return pd.DataFrame.from_records(out)
 
 def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
-    print(model_name)
+    print(model_name)   
     p_name = mp.current_process().name
     print('Starting:', p_name)
     if model_name == 'lstm':
