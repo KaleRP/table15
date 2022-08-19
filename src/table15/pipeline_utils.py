@@ -29,7 +29,7 @@ def get_from_configs(configs: Dict, key: str, param_type: str=None):
         return configs[param_type][key]
     if key in configs['CONFIGS']:
         return configs['CONFIGS'][key]
-    print('Warning: could not locate configuration')
+    print(f'Warning: could not locate param {key} in configs')
     return None
 
 
