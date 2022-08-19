@@ -57,14 +57,14 @@ def generate_data(configs: Dict):
         np.random.seed(random_seed)
 
     features = numerical_features + categorical_features + binary_features
-    x = df[features]
-    Y = df[target_feature]
+    x = df.loc[:, features]
+    Y = df.loc[:, target_feature]
 
     x_train, x_validation, Y_train, Y_validation = train_test_split(x, Y, test_size=test_size, random_state=random_seed)
     
     x_train = impute(x_train)
     x_validation = impute(x_validation)
-
+    print(x_train.head())
     stsc = StandardScaler()
     xst_train = stsc.fit_transform(x_train)
     xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=x_train.columns)
