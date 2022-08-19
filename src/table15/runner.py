@@ -48,15 +48,17 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 print('in1')
                 p = mp.Process(name=key, target=run_magecs, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
-                # processes.append(p)
-                p.start()
-                p.join()
+                processes.append(p)
 
-        # for p in processes:
-        #     p.start()
-        # for process in processes:
-        #     process.join()
-        
+        for p in processes:
+            print(f'starting process {p.name}')
+            p.start()
+            time.sleep(5)
+            print(f'Finshed process {p.name}')
+        for process in processes:
+            process.join()
+            time.sleep(1)
+
         # TODO: Def this process:
         baseline_runs = defaultdict(list)
         keys = sorted(keys)
@@ -135,8 +137,7 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     return pd.DataFrame.from_records(out)
 
 def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
-    print('in2')
-    print(model_name)   
+    print(model_name)
     p_name = mp.current_process().name
     print('Starting:', p_name)
     if model_name == 'lstm':
