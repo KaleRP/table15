@@ -57,8 +57,8 @@ def generate_data(configs: Dict):
         np.random.seed(random_seed)
 
     features = numerical_features + categorical_features + binary_features
-    x = df.iloc[:, features]
-    Y = df.iloc[:, target_feature]
+    x = df.loc[:, features]
+    Y = df.loc[:, target_feature]
 
     x_train, x_validation, Y_train, Y_validation = train_test_split(x, Y, test_size=test_size, random_state=random_seed)
     
