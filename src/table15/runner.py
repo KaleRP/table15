@@ -53,13 +53,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 processes.append(p)
     
         for p in processes:
-            print(f'starting process {p.name}')
+            print(p)
             p.start()
-            time.sleep(5)
-            print(f'Finshed process {p.name}')
-        for process in processes:
-            process.join()
-            time.sleep(1)
+        for p in processes:
+            p.join()
 
         # TODO: Def this process:
         baseline_runs = defaultdict(list)
