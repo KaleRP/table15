@@ -20,6 +20,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES', param_type='CONFIGS')
     models = plutils.get_from_configs(configs, 'MODELS', param_type='CONFIGS')
+    policy = plutils.get_from_configs(configs, 'POLICY', param_type='CONFIGS')
 
     df, features, x_train_p, x_validation_p, y_train_p, y_validation_p = plutils.generate_data(configs)
     print('x_train.shape:', x_train_p.shape)
