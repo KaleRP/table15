@@ -75,55 +75,55 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
     
-    # TODO: Def this process:
-    baseline_to_scores_df = {}
-    all_joined = {}
-    for baseline, model_runs in baseline_runs.items():
-        baseline_joined = mg.magec_models(*model_runs,
-                            Xdata=x_validation_p,
-                            Ydata=y_validation_p,
-                            features=features)
-        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
-        scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
+        # TODO: Def this process:
+        baseline_to_scores_df = {}
+        all_joined = {}
+        for baseline, model_runs in baseline_runs.items():
+            baseline_joined = mg.magec_models(*model_runs,
+                                Xdata=x_validation_p,
+                                Ydata=y_validation_p,
+                                features=features)
+            baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+            scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
 
-        all_joined[baseline] = baseline_joined
-        baseline_to_scores_df[baseline] = scores_df
+            all_joined[baseline] = baseline_joined
+            baseline_to_scores_df[baseline] = scores_df
 
-    output_logits = {}
-    output_probs = {}
+        output_logits = {}
+        output_probs = {}
 
-    # TODO: fix baselines upstream  to handle None as 0
-    if None in baselines:
-        idx = baselines.index(None)
-        baselines[idx] = 0
+        # TODO: fix baselines upstream  to handle None as 0
+        if None in baselines:
+            idx = baselines.index(None)
+            baselines[idx] = 0
 
-    for baseline in baselines:
-        if baseline is None:
-            baseline = 0
-        df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
-        base_logits_strings = get_string_repr(df_logits, features)
-        output_logits[baseline] = base_logits_strings
+        for baseline in baselines:
+            if baseline is None:
+                baseline = 0
+            df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
+            base_logits_strings = get_string_repr(df_logits, features)
+            output_logits[baseline] = base_logits_strings
 
-        df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
-        base_probs_strings = get_string_repr(df_probs, features)
-        output_probs[baseline] = base_probs_strings
-    
-    df_logits_out = pd.DataFrame.from_records(output_logits)
-    df_logits_out['feature'] = features
-    # re-order cols
-    cols = ['feature'] + baselines
-    df_logits_out[cols]
+            df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
+            base_probs_strings = get_string_repr(df_probs, features)
+            output_probs[baseline] = base_probs_strings
+        
+        df_logits_out = pd.DataFrame.from_records(output_logits)
+        df_logits_out['feature'] = features
+        # re-order cols
+        cols = ['feature'] + baselines
+        df_logits_out[cols]
 
-    df_probs_out = pd.DataFrame.from_records(output_probs)
-    df_probs_out['feature'] = features
-    # re-order cols
-    cols = ['feature'] + baselines
-    df_probs_out[cols]
+        df_probs_out = pd.DataFrame.from_records(output_probs)
+        df_probs_out['feature'] = features
+        # re-order cols
+        cols = ['feature'] + baselines
+        df_probs_out[cols]
 
-    print(df_logits_out.head())
-    print(df_probs_out.head())
+        print(df_logits_out.head())
+        print(df_probs_out.head())
 
-    return (df_logits_out, df_probs_out), all_joined
+        return (df_logits_out, df_probs_out), all_joined
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
