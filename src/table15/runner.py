@@ -19,13 +19,14 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'NUMERICAL', param_type='FEATURES')
+    models = get_from_configs(configs, 'MODELS', param_type='CONFIGS')
 
     df, features, x_train_p, x_validation_p, y_train_p, y_validation_p = plutils.generate_data(configs)
     print('x_train.shape:', x_train_p.shape)
     print('y_train.shape:', y_train_p.shape)
 
     # Train models
-    models_dict = plutils.train_models(x_train_p, y_train_p, configs)
+    models_dict = plutils.train_models(x_train_p, y_train_p, models, configs)
     
     # Format check for Yaml configs
     if baselines is None:
@@ -37,6 +38,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         processes = []
         keys = []
         for baseline in baselines:
+            print(models_dict)
             for model in models_dict.keys():
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)

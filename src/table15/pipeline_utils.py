@@ -64,7 +64,7 @@ def generate_data(configs: Dict):
     
     x_train = impute(x_train)
     x_validation = impute(x_validation)
-    print(x_train.head())
+
     stsc = StandardScaler()
     xst_train = stsc.fit_transform(x_train)
     xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=x_train.columns)
@@ -111,7 +111,7 @@ def create_mlp(x_train_p=None):
     return mlp
 
 
-def train_models(x_train_p, y_train_p, configs):
+def train_models(x_train_p, y_train_p, models, configs):
     """
     3 ML models for scaled data
     :param x_train_p:
