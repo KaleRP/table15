@@ -15,7 +15,6 @@ from keras.layers import Dense
 from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 from . import magec_utils as mg
-from . import pipeline_utils as plutils
 import os
 
 def yaml_parser(yaml_path):
@@ -23,17 +22,16 @@ def yaml_parser(yaml_path):
         parsed_yaml = yaml.safe_load(file)
     return parsed_yaml
 
-
+    
 def get_from_configs(configs: Dict, key: str, param_type: str=None):
     key = key.upper()
-    if param_type == 'hyperparams':
-        for k in configs:
-                if k == key:
-                    return configs[k]
-    for k in configs['CONFIGS']:
-        if k == key:
-            return configs['CONFIGS'][k]
+    if param_type in configs and key in configs[param_type]:
+        return configs[param_type][key]
+    if key in configs['CONFIGS']:
+        return configs['CONFIGS'][key]
+    print('Warning: could not locate configuration')
     return None
+
 
 def generate_data(configs: Dict):
     def impute(df):
