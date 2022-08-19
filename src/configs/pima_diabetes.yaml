@@ -1,5 +1,5 @@
 CONFIGS:
-  DIABS_PATH: '../data/diabetes.csv'
+  CSV_PATH: '../data/diabetes.csv'
   
   POLICY: 'mean'
   MODELS: ['mlp', 'rf', 'lr']
