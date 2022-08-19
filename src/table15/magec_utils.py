@@ -442,6 +442,7 @@ def magec_models(*magecs, **kwargs):
     Xdata = kwargs.get('Xdata', None)
     Ydata = kwargs.get('Ydata', None)
     features = kwargs.get('features', [])
+    print(magecs)
     assert len(magecs) > 1
     jcols, cols = magec_cols(magecs[0], features)
     magec = magecs[0][cols]
