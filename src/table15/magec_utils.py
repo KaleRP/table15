@@ -896,14 +896,18 @@ def magec_scores(magecs_feats,
         for feat_col, score_cols in feat_dict.items():
             feat = row[feat_col]
             print(feat)
-            if feat is None or score_cols[0] is None:
+            if feat == 'not_found':
                 continue
             logits_score_col = score_cols[0]
             logits_score = row[logits_score_col]
+            if logits_score is None:
+                continue
             logits_score = scoring(logits_score)
 
             probs_score_col = score_cols[1]
             probs_score = row[probs_score_col]
+            if probs_score is None:
+                continue
             probs_score = scoring(probs_score)
 
             if use_weights:
