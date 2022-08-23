@@ -895,6 +895,7 @@ def magec_scores(magecs_feats,
     for model, feat_dict in magecs_feats.items():
         for feat_col, score_cols in feat_dict.items():
             feat = row[feat_col]
+            print(feat)
             if feat is None:
                 continue
             logits_score_col = score_cols[0]
