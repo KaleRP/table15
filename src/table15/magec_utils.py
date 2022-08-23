@@ -520,9 +520,10 @@ def magec_rank(magecs,
                 #     l.append(None)
                 #     l.append("not_found")
                 # else:
-                l.append(-magec)  # retrieve original magec sign
-                l.append(feat)
-                l.append(magec_prob)
+                if magec > 0:
+                    l.append(-magec)  # retrieve original magec sign
+                    l.append(feat)
+                    l.append(magec_prob)
         out.append(l)
 
     out = pd.DataFrame.from_records(out)
@@ -874,7 +875,7 @@ def magec_winner(magecs_feats,
 
 def magec_scores(magecs_feats,
                  row,
-                 scoring=lambda w: w,
+                 scoring=lambda w: abs(w),
                  use_weights=False,
                  weights={'rf': None, 'mlp': None, 'lr': None},
                  policy='sum'):
@@ -898,11 +899,11 @@ def magec_scores(magecs_feats,
                 continue
             logits_score_col = score_cols[0]
             logits_score = row[logits_score_col]
-            logits_score = scoring(logits_score)
+            # logits_score = scoring(logits_score)
 
             probs_score_col = score_cols[1]
             probs_score = row[probs_score_col]
-            probs_score = scoring(probs_score)
+            # probs_score = scoring(probs_score)
 
             if use_weights:
                 if weights[model] is not None:
