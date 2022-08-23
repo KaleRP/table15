@@ -68,7 +68,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             clf = models_dict[model]
             if model in ['mlp', 'lstm']:
                 clf = clf.model
-            run_dfs[key].append(run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline, features))
+            run_dfs[key].append(run_magecs(clf, x_validation_p, y_validation_p, model, key, baseline, features))
 
     # TODO: Def this process:
     baseline_runs = defaultdict(list)
@@ -168,7 +168,7 @@ def run_magecs_multi(return_dict, clf, x_validation_p, y_validation_p, model_nam
     print('Exiting :', p_name)
     return_dict[p_name] = magecs
 
-def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
+def run_magecs(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
     print('Starting:', key)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
@@ -179,7 +179,6 @@ def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key
     print('Magecs for {} normalized...'.format(key))
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
     print('Exiting :', key)
-    # return_dict[key] = magecs
     return magecs
 
 
