@@ -13,7 +13,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     warnings.filterwarnings('ignore')
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
-    set_start_method("spawn")
+    # set_start_method("spawn")
 
     print('This is Version: 0.0.7')
 
@@ -111,11 +111,11 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     # TODO: fix baselines upstream  to handle None as 0
     if None in baselines:
         idx = baselines.index(None)
-        baselines[idx] = 0
+        baselines[idx] = 100
 
     for baseline in baselines:
         if baseline is None:
-            baseline = 0
+            baseline = 100
         df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
         base_logits_strings = get_string_repr(df_logits, features)
         output_logits[baseline] = base_logits_strings
