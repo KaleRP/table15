@@ -262,6 +262,7 @@ def z_perturbation(model, target_data,
     prob_deltas_per_cell = pd.DataFrame(index=target_data.index,
                                         columns=pd.Index(hier_col_name_generator(categories),
                                                          name='features'))
+    print(binary)
 
     for tt in timepoints:
 
@@ -348,7 +349,7 @@ def create_magec_col(model_name, feature):
 
 
 def case_magecs(model, data, epsilon_value=0, model_name=None,
-                reverse=True, timeseries=False, baseline=None):
+                reverse=True, timeseries=False, baseline=None, binary=None):
     """
     Compute MAgECs for every 'case' (individual row/member table).
     Use all features in data to compute MAgECs.
@@ -359,7 +360,8 @@ def case_magecs(model, data, epsilon_value=0, model_name=None,
                             epsilon_value=epsilon_value,
                             reverse=reverse,
                             timeseries=timeseries,
-                            baseline=baseline)
+                            baseline=baseline,
+                            binary=binary)
     features = magecs.columns
     magecs = magecs.reset_index()
     # rename features in case_magecs to reflect the fact that they are derived for a specific model
