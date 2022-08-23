@@ -263,6 +263,7 @@ def z_perturbation(model, target_data,
                                         columns=pd.Index(hier_col_name_generator(categories),
                                                          name='features'))
     print(binary)
+    print(epsilons)
 
     for tt in timepoints:
 
