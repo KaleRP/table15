@@ -186,7 +186,7 @@ def get_string_repr(df, feats):
     base_strings = []
     for feat in feats:
         mean = round(df[feat].mean(), 4)
-        std = round(df[feat].sem(), 4)
+        std = round(df[feat].std(), 4)
         string_repr = f'{mean} +/- {std}'
         base_strings.append(string_repr)
     return base_strings
