@@ -108,9 +108,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     output_logits = {}
     output_probs = {}
 
-    print(baseline_to_scores_df.keys())
-    print(baseline_to_scores_df)
-
     for baseline in baselines:
         if baseline is None:
             baseline = 0
@@ -134,7 +131,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     df_logits_out['feature'] = features
     # re-order cols
     cols = ['feature'] + baselines
-    print(cols)
     df_logits_out = df_logits_out.rename(columns={'0': 'full'})
     df_logits_out = df_logits_out[cols]
 
