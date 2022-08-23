@@ -443,8 +443,9 @@ def magec_models(*magecs, **kwargs):
     Ydata = kwargs.get('Ydata', None)
     features = kwargs.get('features', [])
     assert len(magecs) > 1
-    jcols, cols = magec_cols(magecs[0], features)
+    print(len(magecs))
     print(magecs[0])
+    jcols, cols = magec_cols(magecs[0], features)
     magec = magecs[0][cols]
     if Xdata is not None:
         magec = magec.merge(Xdata.reset_index(), on=jcols)
