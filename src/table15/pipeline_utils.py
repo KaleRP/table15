@@ -56,7 +56,7 @@ def generate_data(configs: Dict):
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    features = numerical_features + categorical_features + binary_features
+    features = numerical_features
     x = df.loc[:, features]
     Y = df.loc[:, target_feature]
 
