@@ -59,7 +59,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     #         p.join()
 
     # TODO: fix multiprocessing
-    run_dfs = defaultdict(list)
+    run_dfs = dict()
     keys = []
     for baseline in baselines:
         for model in models_dict.keys():
@@ -68,7 +68,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             clf = models_dict[model]
             if model in ['mlp', 'lstm']:
                 clf = clf.model
-            run_dfs[key].append(run_magecs(clf, x_validation_p, y_validation_p, model, key, baseline, features))
+            run_dfs[key] = run_magecs(clf, x_validation_p, y_validation_p, model, key, baseline, features)
 
     # TODO: Def this process:
     baseline_runs = defaultdict(list)
