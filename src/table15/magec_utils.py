@@ -896,7 +896,7 @@ def magec_scores(magecs_feats,
         for feat_col, score_cols in feat_dict.items():
             feat = row[feat_col]
             print(feat)
-            if feat is None:
+            if feat is None or score_cols[0] is None:
                 continue
             logits_score_col = score_cols[0]
             logits_score = row[logits_score_col]
