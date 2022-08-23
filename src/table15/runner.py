@@ -84,7 +84,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             yaml_check = None
         assert yaml_check in baselines
         baseline_runs[baseline].append(run_dfs[key])
-
+    
+    print(run_dfs.keys())
     print(len(run_dfs[0.5]))
 
     # TODO: Def this process:
