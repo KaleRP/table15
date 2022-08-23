@@ -86,7 +86,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         baseline_runs[baseline].append(run_dfs[key])
     
     print(run_dfs.keys())
-    print(len(run_dfs[0.5]))
+    print(baselines.keys())
+
+    print(len(run_dfs['lr_p50']))
+    print(len(baselines['lr_p50']))
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
