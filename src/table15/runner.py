@@ -68,7 +68,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             clf = models_dict[model]
             if model in ['mlp', 'lstm']:
                 clf = clf.model
-            run_dfs[key] = run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model,key, baseline, features)
+            run_dfs[key] = run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model, key, baseline, features)
 
     # TODO: Def this process:
     baseline_runs = defaultdict(list)
@@ -84,6 +84,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             yaml_check = None
         assert yaml_check in baselines
         baseline_runs[baseline].append(run_dfs[key])
+
+    print(len(run_dfs[0.5]))
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
