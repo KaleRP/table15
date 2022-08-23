@@ -173,8 +173,8 @@ def run_magecs(return_dict, clf, x_validation_p, y_validation_p, model_name, key
     print('Magecs for {} normalized...'.format(key))
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
     print('Exiting :', key)
-    return_dict[key] = magecs
-    return return_dict
+    # return_dict[key] = magecs
+    return magecs
 
 
 def get_string_repr(df, feats):
