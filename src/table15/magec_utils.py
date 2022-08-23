@@ -909,6 +909,8 @@ def magec_scores(magecs_feats,
             probs_score = row[probs_score_col]
             if probs_score in [None, 'nan']:
                 continue
+            if isinstance(probs_score, str):
+                print(probs_score)
             probs_score = scoring(probs_score)
 
             if use_weights:
