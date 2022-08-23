@@ -830,7 +830,7 @@ def name_matching(cols, models):
 
 def magec_winner(magecs_feats,
                  row,
-                 scoring=lambda w: w,
+                 scoring=lambda w: abs(w),
                  use_weights=False,
                  weights={'rf': None, 'mlp': None, 'lr': None},
                  policy='sum'):
