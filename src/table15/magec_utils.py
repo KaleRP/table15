@@ -262,8 +262,6 @@ def z_perturbation(model, target_data,
     prob_deltas_per_cell = pd.DataFrame(index=target_data.index,
                                         columns=pd.Index(hier_col_name_generator(categories),
                                                          name='features'))
-    print(binary)
-    print(epsilons)
 
     for tt in timepoints:
 
