@@ -115,7 +115,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
 
         if baseline in [None, 0]:
-            baseline = 100
+            baseline = 1.0
         base_logits_strings = get_string_repr(df_logits, features)
         base_probs_strings = get_string_repr(df_probs, features)
 
@@ -125,7 +125,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     # TODO: fix baselines upstream  to handle None as 0
     if None in baselines:
         idx = baselines.index(None)
-        baselines[idx] = 100
+        baselines[idx] = 1.0
     
     df_logits_out = pd.DataFrame.from_records(output_logits)
     df_logits_out['feature'] = features
