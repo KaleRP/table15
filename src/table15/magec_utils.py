@@ -444,7 +444,8 @@ def magec_models(*magecs, **kwargs):
     features = kwargs.get('features', [])
     assert len(magecs) > 1
     print(len(magecs))
-    print(magecs[0])
+    print(len(magecs[0]))
+    print(magecs[0][0])
     jcols, cols = magec_cols(magecs[0], features)
     magec = magecs[0][cols]
     if Xdata is not None:
