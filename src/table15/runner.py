@@ -62,20 +62,17 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     run_dfs = dict()
     keys = []
     for baseline in baselines:
-        print(models_dict)
         for model in models_dict.keys():
             key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
             keys.append(key)
             clf = models_dict[model]
             if model in ['mlp', 'lstm']:
                 clf = clf.model
-            print('in1')
             run_dfs = run_magecs(run_dfs, clf, x_validation_p, y_validation_p, model,key, baseline, features)
 
     # TODO: Def this process:
     baseline_runs = defaultdict(list)
     keys = sorted(keys)
-    print(features)
     for key in keys:
         baseline = key.split('_')[1]
         if baseline[0] == 'p':
