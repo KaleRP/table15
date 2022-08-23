@@ -519,7 +519,7 @@ def magec_rank(magecs,
                 if magec < 0:  # negative magecs are originally positive magecs and are filtered out
                     l.append(None)
                     l.append(None)
-                    l.append(None)
+                    l.append("not_found")
                 else:
                 # if magec >= 0:
                     l.append(-magec)  # retrieve original magec sign
