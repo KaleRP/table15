@@ -108,6 +108,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     output_logits = {}
     output_probs = {}
 
+    print(baseline_to_scores_df.keys())
+    print(baseline_to_scores_df)
+
     for baseline in baselines:
         df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
         df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
