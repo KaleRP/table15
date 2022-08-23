@@ -538,6 +538,8 @@ def magec_rank(magecs,
                 columns.append(model + '_mageclogits_{}'.format(r))
                 columns.append(model + '_feat_{}'.format(r))
                 columns.append(model + '_magecprobs_{}'.format(r))
+    print(out.columns)
+    print(columns)
     out.columns = columns
     out['case'] = out['case'].astype(magecs['case'].dtype)
     out['timepoint'] = out['timepoint'].astype(magecs['timepoint'].dtype)
