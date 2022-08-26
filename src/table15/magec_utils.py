@@ -54,6 +54,8 @@ def predict(model, data):
     Wrapper for predict_proba function in scikit-learn models.
     When a model does not have a predict_proba use predict interface.
     """
+    import tensorflow
+    import keras
     if hasattr(model, 'predict_proba'):
         probs = model.predict_proba(data)
         if probs.shape[1] == 2:
