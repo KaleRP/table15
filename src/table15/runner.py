@@ -154,10 +154,8 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
     return pd.DataFrame.from_records(out)
 
 def run_magecs_multi(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
-    print('in2')
-    print(model_name)
     p_name = mp.current_process().name
-    print('Starting:', p_name)
+    print('Starting multi:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
     else:
@@ -170,7 +168,7 @@ def run_magecs_multi(return_dict, clf, x_validation_p, y_validation_p, model_nam
     return_dict[p_name] = magecs
 
 def run_magecs(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
-    print('Starting:', key)
+    print('Starting single:', key)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
     else:
