@@ -39,7 +39,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         processes = []
         keys = []
         for baseline in baselines:
-            print(models_dict)
             for model in models_dict.keys():
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
@@ -48,7 +47,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                     clf = clf.model
                 p = mp.Process(name=key, target=run_magecs, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
-                print('in11')
                 processes.append(p)
     
         for p in processes:
