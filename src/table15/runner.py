@@ -45,7 +45,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 clf = models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
-                p = mp.Process(name=key, target=run_magecs, 
+                p = mp.Process(name=key, target=run_magecs_multi, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
                 processes.append(p)
     
