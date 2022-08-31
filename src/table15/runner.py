@@ -10,13 +10,13 @@ from collections import defaultdict
 import warnings
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
+    warnings.filterwarnings('ignore')
     try:
-        warnings.filterwarnings('ignore')
+        set_start_method("spawn")
     except RuntimeError:
         pass
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
-    # set_start_method("spawn")
 
     print('This is Version: 0.0.8')
 
