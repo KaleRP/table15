@@ -71,7 +71,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 if baseline == 0:
                     yaml_check = None
                 assert yaml_check in baselines
-                tf_baseline_runs[baseline].append(run_dfs[key])
+                tf_baseline_runs[baseline].append(tf_run_dfs[key])
 
     print('getting magecs...')
     with mp.Manager() as manager:
