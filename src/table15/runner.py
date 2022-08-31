@@ -42,7 +42,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     sk_models_dict = models_dict.copy()
     if has_tf_models:
-        tf_models_list = ['mlp']
+        tf_models_list = ['mlp', 'ensemble']
         tf_models = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
         for tf_model in tf_models_list:
             del sk_models_dict[tf_model]
