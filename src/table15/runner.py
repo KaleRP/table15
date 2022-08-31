@@ -36,7 +36,11 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     if baselines is None:
         baselines = [None]
 
+    has_tf_models = False
     if 'mlp' in models_dict:
+        has_tf_models = True
+    
+    if has_tf_models:
         tf_models_list = ['mlp']
         tf_models = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
 
@@ -104,8 +108,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
 
-    for baseline in baselines:
-        baseline_runs[baseline].extend(tf_baseline_runs[baseline])
+    if has_tf_models:
+        for baseline in baselines:
+            baseline_runs[baseline].extend(tf_baseline_runs[baseline])
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
