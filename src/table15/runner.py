@@ -109,8 +109,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             tf_baseline_runs[baseline].append(tf_run_dfs[key])
 
     # if has_tf_models:
-            for baseline in baselines:
-                baseline_runs[baseline].extend(tf_baseline_runs[baseline])
+        for baseline in baselines:
+            baseline_runs[baseline].extend(tf_baseline_runs[baseline])
+    print(baseline_runs.keys())
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
