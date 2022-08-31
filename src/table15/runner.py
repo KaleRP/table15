@@ -111,6 +111,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     # if has_tf_models:
         for baseline in baselines:
+            if baseline is None:
+                baseline = 0
             baseline_runs[baseline].extend(tf_baseline_runs[baseline])
     print(baseline_runs.keys())
 
