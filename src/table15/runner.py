@@ -96,6 +96,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 tf_run_dfs[key] = plutils.run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
         # TODO: Def this process:
         tf_baseline_runs = defaultdict(list)
+        print('keys', keys)
         for key in keys:
             baseline = key.split('_')[1]
             if baseline[0] == 'p':
