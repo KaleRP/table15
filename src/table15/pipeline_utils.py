@@ -16,6 +16,7 @@ from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 from . import magec_utils as mg
 import os
+import multiprocessing as mp
 
 def yaml_parser(yaml_path):
     with open(yaml_path, 'r') as file:
