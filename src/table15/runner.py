@@ -36,18 +36,37 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     if baselines is None:
         baselines = [None]
 
-    # # TODO: fix multiprocessing for tensorflow based models
-    # if 'mlp' in models_dict:
-    #     run_dfs_single = dict()
-    #     keys = []
-    #     for baseline in baselines:
-    #         for model in models_dict.keys():
-    #             key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
-    #             keys.append(key)
-    #             clf = models_dict[model]
-    #             if model in ['mlp', 'lstm']:
-    #                 clf = clf.model
-    #             run_dfs_single[key] = plutils.run_magecs(clf, x_validation_p, y_validation_p, model, key, baseline, features)
+    tf_models_list = ['mlp']
+    tf_models = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
+
+    sk_models_dict = models_dict.copy()
+    for tf_model in tf_models_list:
+        del sk_models_dict[tf_model]
+
+    # TODO: fix multiprocessing for tensorflow based models
+    tf_run_dfs = dict()
+    keys = []
+    for baseline in baselines:
+        for model in tf_models.keys():
+            key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
+            keys.append(key)
+            clf = models_dict[model]
+            if model in ['mlp', 'lstm']:
+                clf = clf.model
+            tf_run_dfs[key] = plutils.run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
+    # TODO: Def this process:
+        tf_baseline_runs = defaultdict(list)
+        for key in keys:
+            baseline = key.split('_')[1]
+            if baseline[0] == 'p':
+                baseline = int(baseline[1:]) / 100
+            else:
+                baseline = int(baseline)
+            yaml_check = baseline
+            if baseline == 0:
+                yaml_check = None
+            assert yaml_check in baselines
+            tf_baseline_runs[baseline].append(run_dfs[key])
 
     print('getting magecs...')
     with mp.Manager() as manager:
@@ -72,7 +91,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
         # TODO: Def this process:
         baseline_runs = defaultdict(list)
-        # keys = sorted(keys)
         for key in keys:
             baseline = key.split('_')[1]
             if baseline[0] == 'p':
@@ -84,6 +102,9 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 yaml_check = None
             assert yaml_check in baselines
             baseline_runs[baseline].append(run_dfs[key])
+
+    for baseline in baselines:
+        baseline_runs[baseline].extend(tf_baseline_runs[baseline])
 
     # TODO: Def this process:
     baseline_to_scores_df = {}

@@ -156,7 +156,7 @@ def train_models(x_train_p, y_train_p, models, configs):
     return models_dict
 
 
-def run_magecs(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
+def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
     print('Starting single:', key)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
