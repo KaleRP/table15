@@ -70,20 +70,20 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         for p in processes:
             p.join()
 
-    # TODO: Def this process:
-    baseline_runs = defaultdict(list)
-    # keys = sorted(keys)
-    for key in keys:
-        baseline = key.split('_')[1]
-        if baseline[0] == 'p':
-            baseline = int(baseline[1:]) / 100
-        else:
-            baseline = int(baseline)
-        yaml_check = baseline
-        if baseline == 0:
-            yaml_check = None
-        assert yaml_check in baselines
-        baseline_runs[baseline].append(run_dfs[key])
+        # TODO: Def this process:
+        baseline_runs = defaultdict(list)
+        # keys = sorted(keys)
+        for key in keys:
+            baseline = key.split('_')[1]
+            if baseline[0] == 'p':
+                baseline = int(baseline[1:]) / 100
+            else:
+                baseline = int(baseline)
+            yaml_check = baseline
+            if baseline == 0:
+                yaml_check = None
+            assert yaml_check in baselines
+            baseline_runs[baseline].append(run_dfs[key])
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
