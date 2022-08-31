@@ -46,7 +46,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         tf_models = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
         for tf_model in tf_models_list:
             del sk_models_dict[tf_model]
-    print(sk_models_dict.keys())
+
     print('getting magecs...')
     with mp.Manager() as manager:
         run_dfs = manager.dict()
@@ -96,7 +96,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
                 tf_run_dfs[key] = plutils.run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
         # TODO: Def this process:
         tf_baseline_runs = defaultdict(list)
-        print('keys', keys)
         for key in keys:
             baseline = key.split('_')[1]
             if baseline[0] == 'p':
@@ -109,12 +108,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             assert yaml_check in baselines
             tf_baseline_runs[baseline].append(tf_run_dfs[key])
 
-    # if has_tf_models:
         for baseline in baselines:
             if baseline is None:
                 baseline = 0
             baseline_runs[baseline].extend(tf_baseline_runs[baseline])
-    print(baseline_runs.keys())
 
     # TODO: Def this process:
     baseline_to_scores_df = {}
