@@ -47,7 +47,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         sk_models_dict = models_dict.copy()
         for tf_model in tf_models_list:
             del sk_models_dict[tf_model]
-
+    print(sk_models_dict.keys())
     print('getting magecs...')
     with mp.Manager() as manager:
         run_dfs = manager.dict()
