@@ -79,10 +79,10 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
         processes = []
         keys = []
         for baseline in baselines:
-            for model in models_dict.keys():
+            for model in sk_models_dict.keys():
                 key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
                 keys.append(key)
-                clf = models_dict[model]
+                clf = sk_models_dict[model]
                 if model in ['mlp', 'lstm']:
                     clf = clf.model
                 p = mp.Process(name=key, target=plutils.run_magecs_multip, 
