@@ -17,6 +17,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from . import magec_utils as mg
 import os
 import multiprocessing as mp
+from collections import defaultdict
 
 def yaml_parser(yaml_path):
     with open(yaml_path, 'r') as file:
@@ -154,6 +155,51 @@ def train_models(x_train_p, y_train_p, models, configs):
         models_dict[model_name] = clf
     
     return models_dict
+
+
+def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=None):
+    is_multi_process = False
+    run_dfs = dict()
+    if mp_manager is not None:
+        is_multi_process = True
+        run_dfs = mp_manager.dict()
+        processes = []
+    
+    keys = []
+    for baseline in baselines:
+        for model in models_dict.keys():
+            key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
+            keys.append(key)
+            clf = models_dict[model]
+            if is_multi_process is False and model in ['mlp', 'lstm']:
+                    clf = clf.model
+                    run_dfs[key] = run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
+            elif is_multi_process is True:
+                p = mp.Process(name=key, target=run_magecs_multip, 
+                    args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
+            else:
+                raise ValueError(f'Cannot run {key} through multiprocessing')
+        
+    if is_multi_process:
+        for p in processes:
+            p.start()
+        for p in processes:
+            p.join()
+
+    baseline_runs = defaultdict(list)
+    for key in keys:
+        baseline = key.split('_')[1]
+        if baseline[0] == 'p':
+            baseline = int(baseline[1:]) / 100
+        else:
+            baseline = int(baseline)
+        configs_check = baseline
+        if baseline == 0:
+            configs_check = None
+        assert configs_check in baselines
+        baseline_runs[baseline].append(run_dfs[key])
+    
+    return baseline_runs
 
 
 def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
