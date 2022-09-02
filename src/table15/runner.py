@@ -49,43 +49,44 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     print('getting magecs...')
     with mp.Manager() as manager:
-        run_dfs = manager.dict()
-        processes = []
-        keys = []
-        for baseline in baselines:
-            for model in sk_models_dict.keys():
-                key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
-                keys.append(key)
-                clf = sk_models_dict[model]
-                if model in ['mlp', 'lstm']:
-                    clf = clf.model
-                p = mp.Process(name=key, target=plutils.run_magecs_multip, 
-                    args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
-                processes.append(p)
+        baseline_runs = plutils.generate_perturbation_predictions(
+            tf_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=manager)
+        # run_dfs = manager.dict()
+        # processes = []
+        # keys = []
+        # for baseline in baselines:
+        #     for model in sk_models_dict.keys():
+        #         key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
+        #         keys.append(key)
+        #         clf = sk_models_dict[model]
+        #         if model in ['mlp', 'lstm']:
+        #             clf = clf.model
+        #         p = mp.Process(name=key, target=plutils.run_magecs_multip, 
+        #             args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
+        #         processes.append(p)
     
-        for p in processes:
-            p.start()
-        for p in processes:
-            p.join()
+        # for p in processes:
+        #     p.start()
+        # for p in processes:
+        #     p.join()
 
-        # TODO: Def this process:
-        baseline_runs = defaultdict(list)
-        for key in keys:
-            baseline = key.split('_')[1]
-            if baseline[0] == 'p':
-                baseline = int(baseline[1:]) / 100
-            else:
-                baseline = int(baseline)
-            yaml_check = baseline
-            if baseline == 0:
-                yaml_check = None
-            assert yaml_check in baselines
-            baseline_runs[baseline].append(run_dfs[key])
+        # # TODO: Def this process:
+        # baseline_runs = defaultdict(list)
+        # for key in keys:
+        #     baseline = key.split('_')[1]
+        #     if baseline[0] == 'p':
+        #         baseline = int(baseline[1:]) / 100
+        #     else:
+        #         baseline = int(baseline)
+        #     yaml_check = baseline
+        #     if baseline == 0:
+        #         yaml_check = None
+        #     assert yaml_check in baselines
+        #     baseline_runs[baseline].append(run_dfs[key])
 
     if has_tf_models:
         tf_baseline_runs = plutils.generate_perturbation_predictions(
-            tf_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=None
-        )
+            tf_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=None)
         # # TODO: fix multiprocessing for tensorflow based models
         # tf_run_dfs = dict()
         # keys = []
