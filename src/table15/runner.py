@@ -43,7 +43,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     sk_models_dict = models_dict.copy()
     if has_tf_models:
         tf_models_list = ['mlp', 'ensemble']
-        tf_models = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
+        tf_models_dict = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
         for tf_model in tf_models_list:
             del sk_models_dict[tf_model]
 
@@ -83,30 +83,33 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
             baseline_runs[baseline].append(run_dfs[key])
 
     if has_tf_models:
-        # TODO: fix multiprocessing for tensorflow based models
-        tf_run_dfs = dict()
-        keys = []
-        for baseline in baselines:
-            for model in tf_models.keys():
-                key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
-                keys.append(key)
-                clf = models_dict[model]
-                if model in ['mlp', 'lstm']:
-                    clf = clf.model
-                tf_run_dfs[key] = plutils.run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
-        # TODO: Def this process:
-        tf_baseline_runs = defaultdict(list)
-        for key in keys:
-            baseline = key.split('_')[1]
-            if baseline[0] == 'p':
-                baseline = int(baseline[1:]) / 100
-            else:
-                baseline = int(baseline)
-            yaml_check = baseline
-            if baseline == 0:
-                yaml_check = None
-            assert yaml_check in baselines
-            tf_baseline_runs[baseline].append(tf_run_dfs[key])
+        tf_baseline_runs = plutils.generate_perturbation_predictions(
+            tf_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=None
+        )
+        # # TODO: fix multiprocessing for tensorflow based models
+        # tf_run_dfs = dict()
+        # keys = []
+        # for baseline in baselines:
+        #     for model in tf_models_dict.keys():
+        #         key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
+        #         keys.append(key)
+        #         clf = models_dict[model]
+        #         if model in ['mlp', 'lstm']:
+        #             clf = clf.model
+        #         tf_run_dfs[key] = plutils.run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
+        # # TODO: Def this process:
+        # tf_baseline_runs = defaultdict(list)
+        # for key in keys:
+        #     baseline = key.split('_')[1]
+        #     if baseline[0] == 'p':
+        #         baseline = int(baseline[1:]) / 100
+        #     else:
+        #         baseline = int(baseline)
+        #     yaml_check = baseline
+        #     if baseline == 0:
+        #         yaml_check = None
+        #     assert yaml_check in baselines
+        #     tf_baseline_runs[baseline].append(tf_run_dfs[key])
 
         for baseline in baselines:
             if baseline is None:
