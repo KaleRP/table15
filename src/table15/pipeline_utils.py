@@ -1,23 +1,23 @@
+import multiprocessing as mp
+import os
+from collections import defaultdict
 from typing import Dict
-import yaml
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import VotingClassifier
+import yaml
+from keras.layers import Dense, Dropout
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
 from . import magec_utils as mg
-import os
-import multiprocessing as mp
-from collections import defaultdict
+
 
 def yaml_parser(yaml_path):
     with open(yaml_path, 'r') as file:
@@ -229,3 +229,49 @@ def run_magecs_multip(return_dict, clf, x_validation_p, y_validation_p, model_na
     magecs = magecs.merge(y_validation_p, left_on=['case', 'timepoint'], right_index=True)
     print('Exiting :', p_name)
     return_dict[p_name] = magecs
+
+
+def combine_baseline_runs(main_dict, to_combine_dict, baselines):
+    for baseline in baselines:
+        if baseline is None:
+            baseline = 0
+        main_dict[baseline].extend(to_combine_dict[baseline])
+    return main_dict
+
+
+def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, policy):
+    baseline_to_scores_df = {}
+    all_joined = {}
+    for baseline, model_runs in baseline_runs.items():
+        baseline_joined = mg.magec_models(*model_runs,
+                            Xdata=x_validation_p,
+                            Ydata=y_validation_p,
+                            features=features)
+        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+        scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
+
+        all_joined[baseline] = baseline_joined
+        baseline_to_scores_df[baseline] = scores_df
+
+
+def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
+    cols = list(set(ranked_df.columns) - {'case', 'timepoint', 'Outcome'})
+    magecs_feats = mg.name_matching(cols, models)
+    out = list()
+    for (idx, row) in ranked_df.iterrows():
+        scores = mg.magec_scores(magecs_feats, row, use_weights=False, policy=policy)
+        out.append(scores)
+    
+    return pd.DataFrame.from_records(out)
+
+
+def get_string_repr(df, feats):
+    base_strings = []
+    for feat in feats:
+        mean = round(df[feat].mean(), 4)
+        # std = round(df[feat].std(), 4)
+        sem = round(df[feat].sem(), 4)
+        # string_repr = f'{mean} +/- {std}'
+        string_repr = f'{mean} ({sem})'
+        base_strings.append(string_repr)
+    return base_strings
