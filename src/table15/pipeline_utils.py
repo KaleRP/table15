@@ -254,6 +254,7 @@ def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, fea
 
         all_joined[baseline] = baseline_joined
         baseline_to_scores_df[baseline] = scores_df
+    return baseline_to_scores_df
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
