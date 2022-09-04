@@ -171,7 +171,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
             key = model + '_p{}'.format(int(baseline * 100)) if baseline not in [None, 'None'] else model + '_0'
             keys.append(key)
             clf = models_dict[model]
-            if is_multi_process is False and model in ['mlp', 'lstm']:
+            if is_multi_process is False and model in ['mlp', 'lstm', 'ensemble']:
                     clf = clf.model
                     run_dfs[key] = run_magecs_single(clf, x_validation_p, y_validation_p, model, key, baseline, features)
             elif is_multi_process is True:
