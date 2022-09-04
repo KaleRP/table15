@@ -21,7 +21,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
 
-    print('This is Version: 0.0.8')
+    print('This is Version: 0.0.9')
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES', param_type='CONFIGS')
