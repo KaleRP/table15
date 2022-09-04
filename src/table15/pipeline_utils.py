@@ -187,9 +187,6 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
         for p in processes:
             p.join()
 
-    print(keys)
-    print(run_dfs.items())
-
     baseline_runs = defaultdict(list)
     for key in keys:
         baseline = key.split('_')[1]
