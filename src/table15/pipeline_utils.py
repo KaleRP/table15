@@ -177,6 +177,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
             elif is_multi_process is True:
                 p = mp.Process(name=key, target=run_magecs_multip, 
                     args=(run_dfs, clf, x_validation_p, y_validation_p, model, baseline, features))
+                processes.append(p)
             else:
                 raise ValueError(f'Cannot run {key} through multiprocessing')
         
@@ -185,7 +186,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
             p.start()
         for p in processes:
             p.join()
-            
+
     print(keys)
     print(run_dfs.items())
 
