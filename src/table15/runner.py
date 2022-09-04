@@ -43,17 +43,17 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     if 'mlp' in models_dict:
         has_tf_models = True
 
-    sk_models_dict = models_dict.copy()
+    mp_models_dict = models_dict.copy()
     if has_tf_models:
         tf_models_list = ['mlp', 'ensemble']
         tf_models_dict = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
         for tf_model in tf_models_list:
-            del sk_models_dict[tf_model]
+            del mp_models_dict[tf_model]
 
     print('getting magecs via multiprocessing...')
     with mp.Manager() as manager:
         baseline_runs = plutils.generate_perturbation_predictions(
-            tf_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=manager)
+            mp_models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=manager)
         print('Done multiprocessing')
 
     if has_tf_models:
