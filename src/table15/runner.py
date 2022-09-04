@@ -76,8 +76,8 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
         if baseline in [None, 0]:
             baseline = 1.0
-        base_logits_strings = get_string_repr(df_logits, features)
-        base_probs_strings = get_string_repr(df_probs, features)
+        base_logits_strings = plutis.get_string_repr(df_logits, features)
+        base_probs_strings = plutis.get_string_repr(df_probs, features)
 
         output_logits[baseline] = base_logits_strings
         output_probs[baseline] = base_probs_strings
