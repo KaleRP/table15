@@ -243,7 +243,7 @@ def combine_baseline_runs(main_dict, to_combine_dict, baselines):
 
 def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, policy):
     baseline_to_scores_df = {}
-    all_joined = {}
+    all_joined_dfs = {}
     for baseline, model_runs in baseline_runs.items():
         baseline_joined = mg.magec_models(*model_runs,
                             Xdata=x_validation_p,
@@ -252,9 +252,9 @@ def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, fea
         baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
         scores_df = agg_scores(baseline_ranked_df, policy=policy, models=models)
 
-        all_joined[baseline] = baseline_joined
+        all_joined_dfs[baseline] = baseline_joined
         baseline_to_scores_df[baseline] = scores_df
-    return baseline_to_scores_df
+    return baseline_to_scores_df, all_joined_dfs
 
 
 def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):

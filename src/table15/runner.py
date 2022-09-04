@@ -63,7 +63,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
         baseline_runs = plutils.combine_baseline_runs(baseline_runs, tf_baseline_runs, baselines)
 
-    baseline_to_scores_df = plutils.score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, policy)
+    baseline_to_scores_df, all_joined_dfs = plutils.score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, policy)
 
     output_logits = {}
     output_probs = {}
@@ -104,4 +104,4 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     print(df_logits_out.head())
     print(df_probs_out.head())
 
-    return (df_logits_out, df_probs_out), all_joined
+    return (df_logits_out, df_probs_out), all_joined_dfs
