@@ -278,3 +278,13 @@ def get_string_repr(df, feats):
         string_repr = f'{mean} ({sem})'
         base_strings.append(string_repr)
     return base_strings
+
+
+def produce_output_df(output, features, baselines):
+    df_out = pd.DataFrame.from_records(output)
+    df_out['feature'] = features
+    # re-order cols
+    cols = ['feature'] + baselines
+    df_out = df_out.rename(columns={'0': 'full'})
+    df_out = df_out[cols]
+    return df_out
