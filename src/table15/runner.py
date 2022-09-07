@@ -27,25 +27,25 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     baselines = plutils.get_from_configs(configs, 'BASELINES', param_type='CONFIGS')
     models = plutils.get_from_configs(configs, 'MODELS', param_type='CONFIGS')
     policy = plutils.get_from_configs(configs, 'POLICY', param_type='CONFIGS')
+    use_ensemble = plutils.get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
 
     df, features, x_train_p, x_validation_p, y_train_p, y_validation_p = plutils.generate_data(configs)
-    print('x_train.shape:', x_train_p.shape)
-    print('y_train.shape:', y_train_p.shape)
 
     # Train models
-    models_dict = plutils.train_models(x_train_p, y_train_p, models, configs)
-    
-    # Format check for Yaml configs
-    if baselines is None:
-        baselines = [None]
+    print('Training models ...')
+    models_dict = plutils.train_models(x_train_p, y_train_p, models, use_ensemble=use_ensemble)
+    print('Finished training models')
 
+    # Flag for single-process models
     has_tf_models = False
     if 'mlp' in models_dict:
         has_tf_models = True
 
     mp_models_dict = models_dict.copy()
     if has_tf_models:
-        tf_models_list = ['mlp', 'ensemble']
+        tf_models_list = ['mlp']
+        if use_ensemble is True:
+            tf_models_list.append('ensemble')
         tf_models_dict = {tf_model: models_dict[tf_model] for tf_model in tf_models_list}
         for tf_model in tf_models_list:
             del mp_models_dict[tf_model]
@@ -89,20 +89,6 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
 
     df_logits_out = plutils.produce_output_df(output_logits, features, baselines)
     df_probs_out = plutils.produce_output_df(output_probs, features, baselines)
-    
-    # df_logits_out = pd.DataFrame.from_records(output_logits)
-    # df_logits_out['feature'] = features
-    # # re-order cols
-    # cols = ['feature'] + baselines
-    # df_logits_out = df_logits_out.rename(columns={'0': 'full'})
-    # df_logits_out = df_logits_out[cols]
-
-    # df_probs_out = pd.DataFrame.from_records(output_probs)
-    # df_probs_out['feature'] = features
-    # # re-order cols
-    # cols = ['feature'] + baselines
-    # df_probs_out = df_probs_out.rename(columns={'0': 'full'})
-    # df_probs_out = df_probs_out[cols]
 
     print(df_logits_out.head())
     print(df_probs_out.head())

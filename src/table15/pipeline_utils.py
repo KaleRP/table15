@@ -113,14 +113,13 @@ def create_mlp(x_train_p=None):
     return mlp
 
 
-def train_models(x_train_p, y_train_p, models, configs):
+def train_models(x_train_p, y_train_p, models, use_ensemble=False):
     """
     3 ML models for scaled data
     :param x_train_p:
     :param y_train_p:
     :return:
     """
-    use_ensemble = get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
 
     estimators = list()
 
