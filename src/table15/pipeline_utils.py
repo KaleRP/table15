@@ -287,3 +287,22 @@ def produce_output_df(output, features, baselines):
     df_out = df_out.rename(columns={'0': 'full'})
     df_out = df_out[cols]
     return df_out
+
+def visualize_output(baseline_to_scores_df, baselines, features,  out_type='logits'):
+    output = {}
+    for baseline in baselines:
+        if baseline is None:
+            baseline = 0
+        df_out = pd.DataFrame.from_records(baseline_to_scores_df[baseline][out_type])
+    
+        if baseline in [None, 0]:
+            baseline = 1.0
+        output[baseline] = get_string_repr(df_out, features)
+    
+     # TODO: fix baselines upstream  to handle None as 0
+    if None in baselines:
+        idx = baselines.index(None)
+        baselines[idx] = 1.0
+
+    df_out =  produce_output_df(output, features, baselines)
+    return df_out
