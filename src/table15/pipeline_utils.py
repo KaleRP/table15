@@ -299,10 +299,11 @@ def visualize_output(baseline_to_scores_df, baselines, features,  out_type='logi
             baseline = 1.0
         output[baseline] = get_string_repr(df_out, features)
     
-     # TODO: fix baselines upstream  to handle None as 0
+    # TODO: fix baselines upstream  to handle None as 0
+    formatted_baselines = baselines.copy()
     if None in baselines:
-        idx = baselines.index(None)
-        baselines[idx] = 1.0
+        idx = formatted_baselines.index(None)
+        formatted_baselines[idx] = 1.0
 
-    df_out =  produce_output_df(output, features, baselines)
+    df_out =  produce_output_df(output, features, formatted_baselines)
     return df_out
