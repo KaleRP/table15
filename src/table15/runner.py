@@ -16,6 +16,7 @@ from . import pipeline_utils as plutils
 def run(configs_path='../configs/pima_diabetes.yaml'):
     if not os.path.isabs(configs_path):
         configs_path = os.path.join(os.getcwd(), configs_path)
+    print(configs_path)
 
     warnings.filterwarnings('ignore')
     try:
@@ -25,7 +26,7 @@ def run(configs_path='../configs/pima_diabetes.yaml'):
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
 
-    print('This is Version: 0.0.9')
+    print('This is Version: 0.0.10')
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES', param_type='CONFIGS')
