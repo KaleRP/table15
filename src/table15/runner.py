@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import os
 import time
 import warnings
 from collections import defaultdict
@@ -13,6 +14,9 @@ from . import pipeline_utils as plutils
 
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
+    if not os.path.isabs(configs_path):
+        configs_path = os.path.join(os.getcwd(), configs_path)
+
     warnings.filterwarnings('ignore')
     try:
         set_start_method("spawn")
