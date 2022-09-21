@@ -15,7 +15,8 @@ from . import pipeline_utils as plutils
 
 def run(configs_path='../configs/pima_diabetes.yaml'):
     if not os.path.isabs(configs_path):
-        configs_path = os.path.join(os.getcwd(), configs_path)
+        script_dir = 'os.path.dirname(os.path.abspath(__file__))'
+        configs_path = os.path.join(script_dir, configs_path)
     print(configs_path)
 
     warnings.filterwarnings('ignore')
