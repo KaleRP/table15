@@ -17,7 +17,6 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     if not os.path.isabs(configs_path):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         configs_path = os.path.join(script_dir, configs_path)
-    print(configs_path)
 
     warnings.filterwarnings('ignore')
     try:
@@ -27,7 +26,7 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
 
-    print('This is Version: 0.0.10')
+    print('This is Version: 0.0.11')
 
     configs = plutils.yaml_parser(configs_path)
     baselines = plutils.get_from_configs(configs, 'BASELINES', param_type='CONFIGS')
@@ -73,33 +72,5 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
 
     df_logits_out = plutils.visualize_output(baseline_to_scores_df, baselines, features, out_type='logits')
     df_probs_out = plutils.visualize_output(baseline_to_scores_df, baselines, features, out_type='probs')
-
-    # output_logits = {}
-    # output_probs = {}
-
-    # for baseline in baselines:
-    #     if baseline is None:
-    #         baseline = 0
-    #     df_logits = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['logits'])
-    #     df_probs = pd.DataFrame.from_records(baseline_to_scores_df[baseline]['probs'])
-
-    #     if baseline in [None, 0]:
-    #         baseline = 1.0
-    #     base_logits_strings = plutils.get_string_repr(df_logits, features)
-    #     base_probs_strings = plutils.get_string_repr(df_probs, features)
-
-    #     output_logits[baseline] = base_logits_strings
-    #     output_probs[baseline] = base_probs_strings
-    
-    # # TODO: fix baselines upstream  to handle None as 0
-    # if None in baselines:
-    #     idx = baselines.index(None)
-    #     baselines[idx] = 1.0
-
-    # df_logits_out = plutils.produce_output_df(output_logits, features, baselines)
-    # df_probs_out = plutils.produce_output_df(output_probs, features, baselines)
-
-    # print(df_logits_out.head())
-    # print(df_probs_out.head())
 
     return (df_logits_out, df_probs_out), all_joined_dfs
