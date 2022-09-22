@@ -60,7 +60,8 @@ def generate_data(configs: Dict):
         np.random.seed(random_seed)
 
     non_numerical_features = binary_features # + categorical_features
-    features = numerical_features + binary_features # + categorical_features
+    features = numerical_features + non_numerical_features
+    
     x = df.loc[:, features]
     Y = df.loc[:, target_feature]
 
@@ -72,12 +73,11 @@ def generate_data(configs: Dict):
     stsc = StandardScaler()
     
     xst_cols_train = stsc.fit_transform(x_train[numerical_features])
-    rest_cols_train = x_train[x_train.colums[~x_train.colums.isin(numerical_features)]]
-    xst_train = pd.DataFrame(xst_cols_train.append(rest_cols_train), index=x_train.index, columns=x_train.columns)
+    rest_cols_train = x_train[non_numerical_features]
+    xst_train = pd.concat([xst_cols_train, rest_cols_train], axis=1)
     
-    xst_validation = stsc.transform(x_validation)
-    xst_validation = xst_validation.append(x_validation[])
-    xst_validation = pd.DataFrame(xst_validation, index=x_validation.index, columns=x_validation.columns)
+    xst_validation = stsc.transform(x_validation[numerical_features])
+    xst_validation = pd.concat([xst_validation, x_validation[non_numerical_features]], axis=1)
 
     # Format
     x_validation_p = xst_validation.copy()
