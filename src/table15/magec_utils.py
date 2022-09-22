@@ -21,6 +21,7 @@ from sklearn.metrics import confusion_matrix
 from numpy import interp
 import rbo
 from collections import OrderedDict
+import time
 
 
 def get_logit_base2(prob, eps=1e-16):
@@ -183,6 +184,7 @@ def series_prediction(model, target_data, score_preprocessing,
                 print(epsilons)
                 print(var_name)
                 print(epsilons[var_name])
+                time.sleep(5)
                 raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
             else:
                 tmp = df.loc[:, var_name]
