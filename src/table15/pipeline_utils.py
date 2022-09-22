@@ -72,11 +72,13 @@ def generate_data(configs: Dict):
 
     stsc = StandardScaler()
     
-    xst_cols_train = stsc.fit_transform(x_train[numerical_features])
-    rest_cols_train = x_train[non_numerical_features]
-    xst_train = pd.concat([xst_cols_train, rest_cols_train], axis=1)
+    # Scale only numerical features
+    xst_train = stsc.fit_transform(x_train[numerical_features])
+    xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=numerical_features)
+    xst_train = pd.concat([xst_train, x_train[non_numerical_features]], axis=1)
     
     xst_validation = stsc.transform(x_validation[numerical_features])
+    xst_validation = pd.DataFrame(xst_validation, index=xst_validation.index, columns=numerical_features)
     xst_validation = pd.concat([xst_validation, x_validation[non_numerical_features]], axis=1)
 
     # Format
