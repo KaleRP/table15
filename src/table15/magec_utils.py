@@ -258,6 +258,7 @@ def z_perturbation(model, target_data,
     if binary is None:
         binary = target_data.apply(lambda x: len(np.unique(x)), ) <= 2
         binary = binary[binary].index.tolist()
+        print(binary)
 
     epsilons = dict()
     for var_name in features:
