@@ -180,6 +180,9 @@ def series_prediction(model, target_data, score_preprocessing,
                 new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
                 new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
             elif type(epsilons[var_name]) is list:
+                print(epsilons)
+                print(var_name)
+                print(epsilons[var_name])
                 raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
             else:
                 tmp = df.loc[:, var_name]
