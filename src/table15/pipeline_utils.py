@@ -188,6 +188,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
             p.join()
 
     baseline_runs = defaultdict(list)
+    print(keys)
     for key in keys:
         baseline = key.split('_')[1]
         if baseline[0] == 'p':
