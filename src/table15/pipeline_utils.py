@@ -147,7 +147,7 @@ def train_models(x_train_p, y_train_p, models, use_ensemble=False):
         params = {'x_train_p': x_train_p}
         mlp = KerasClassifier(build_fn=create_mlp, x_train_p=x_train_p, epochs=100, batch_size=64, verbose=0)
         mlp._estimator_type = "classifier"
-        mlp.fit(x_train_p, np.asarray(y_train_p))
+        mlp.fit(np.asarray(x_train_p), np.asarray(y_train_p))
         estimators.append(('mlp', mlp))
     
     if use_ensemble:
