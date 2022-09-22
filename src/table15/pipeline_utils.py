@@ -1,4 +1,5 @@
 import multiprocessing as mp
+from nis import cat
 import os
 from collections import defaultdict
 from typing import Dict
@@ -58,7 +59,8 @@ def generate_data(configs: Dict):
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    features = numerical_features + binary_features
+    non_numerical_features = binary_features # + categorical_features
+    features = numerical_features + binary_features # + categorical_features
     x = df.loc[:, features]
     Y = df.loc[:, target_feature]
 
@@ -68,9 +70,13 @@ def generate_data(configs: Dict):
     x_validation = impute(x_validation)
 
     stsc = StandardScaler()
-    xst_train = stsc.fit_transform(x_train)
-    xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=x_train.columns)
+    
+    xst_cols_train = stsc.fit_transform(x_train[numerical_features])
+    rest_cols_train = x_train[x_train.colums[~x_train.colums.isin(numerical_features)]]
+    xst_train = pd.DataFrame(xst_cols_train.append(rest_cols_train), index=x_train.index, columns=x_train.columns)
+    
     xst_validation = stsc.transform(x_validation)
+    xst_validation = xst_validation.append(x_validation[])
     xst_validation = pd.DataFrame(xst_validation, index=x_validation.index, columns=x_validation.columns)
 
     # Format
