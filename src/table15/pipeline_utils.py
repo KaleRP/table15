@@ -78,7 +78,7 @@ def generate_data(configs: Dict):
     xst_train = pd.concat([xst_train, x_train[non_numerical_features]], axis=1)
     
     xst_validation = stsc.transform(x_validation[numerical_features])
-    xst_validation = pd.DataFrame(xst_validation, index=xst_validation.index, columns=numerical_features)
+    xst_validation = pd.DataFrame(xst_validation, index=x_validation.index, columns=numerical_features)
     xst_validation = pd.concat([xst_validation, x_validation[non_numerical_features]], axis=1)
 
     # Format
