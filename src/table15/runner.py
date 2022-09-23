@@ -1,15 +1,9 @@
 import multiprocessing as mp
 import os
-import time
+import sys
 import warnings
-from collections import defaultdict
-from email.mime import base
 from multiprocessing import set_start_method
 
-import pandas as pd
-
-import utils.magec_utils as mg
-import utils.pima_utils as pm
 import utils.pipeline_utils as plutils
 
 
@@ -74,3 +68,11 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     df_probs_out = plutils.visualize_output(baseline_to_scores_df, baselines, features, out_type='probs')
 
     return (df_logits_out, df_probs_out), all_joined_dfs
+
+
+if __name__ == '__main__':
+    config_path = sys.argv[1]
+    if config_path:
+        run(configs_path=config_path)
+    else:
+        run()
