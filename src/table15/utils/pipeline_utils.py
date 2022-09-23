@@ -61,22 +61,21 @@ def generate_data(configs: Dict):
 
     non_numerical_features = binary_features # + categorical_features
     features = numerical_features + non_numerical_features
-    
-    x = df.loc[:, features]
+
+    x = df.loc[:, numerical_features]
+    x = impute(x)
+    x = pd.concat([x, df[non_numerical_features]], axis=1)
+
     Y = df.loc[:, target_feature]
 
     x_train, x_validation, Y_train, Y_validation = train_test_split(x, Y, test_size=test_size, random_state=random_seed)
-    
-    x_train = impute(x_train)
-    x_validation = impute(x_validation)
 
     stsc = StandardScaler()
-    
-    # Scale only numerical features
+
     xst_train = stsc.fit_transform(x_train[numerical_features])
     xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=numerical_features)
     xst_train = pd.concat([xst_train, x_train[non_numerical_features]], axis=1)
-    
+        
     xst_validation = stsc.transform(x_validation[numerical_features])
     xst_validation = pd.DataFrame(xst_validation, index=x_validation.index, columns=numerical_features)
     xst_validation = pd.concat([xst_validation, x_validation[non_numerical_features]], axis=1)
