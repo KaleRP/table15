@@ -8,9 +8,9 @@ from multiprocessing import set_start_method
 
 import pandas as pd
 
-from . import magec_utils as mg
-from . import pima_utils as pm
-from . import pipeline_utils as plutils
+import utils.magec_utils as mg
+import utils.pima_utils as pm
+import utils.pipeline_utils as plutils
 
 
 def run(configs_path='./configs/pima_diabetes.yaml'):
