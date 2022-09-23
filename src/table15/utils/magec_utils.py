@@ -257,10 +257,6 @@ def z_perturbation(model, target_data,
     for var_name in features:
         if var_name in binary:
             epsilons[var_name] = target_data[var_name].unique().tolist()
-            print(len(target_data))
-            print(target_data[target_data['hypertension'] == 1])
-            print('middle')
-            print(target_data[target_data['hypertension'] == 0])
             # epsilons[var_name] = target_data[var_name].value_counts().idxmax()  # most frequent value
         else:
             epsilons[var_name] = epsilon_value
