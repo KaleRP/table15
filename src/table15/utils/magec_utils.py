@@ -123,31 +123,24 @@ def slice_series(target_data, tt, reverse=True):
 
 
 def static_prediction(model, target_data, score_preprocessing,
-                      timepoint, var_name, epsilons, label='orig', baseline=None):
+                      timepoint, var_name, epsilons, label='orig', baseline=0):
     idx = target_data.index.get_level_values('timepoint') == timepoint
     if label == 'orig':
         df = target_data.loc[idx].copy()
     elif label == 'perturb':
         df = target_data.loc[idx].copy()
-        if baseline in [None, 'None']:
-            if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
-                new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
-                new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
-            elif type(epsilons[var_name]) is list:
-                raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
-            else:
-                new_val = epsilons[var_name]
-            df.loc[:, var_name] = new_val
+        # perturb to baseline conditions
+        if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
+            # switch binary values
+            new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
+            new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
+        elif type(epsilons[var_name]) is list:
+            raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
         else:
-            if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
-                new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
-                new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
-            elif type(epsilons[var_name]) is list:
-                raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
-            else:
-                tmp = df.loc[:, var_name]
-                new_val = tmp - tmp * float(baseline)
-            df.loc[:, var_name] = new_val
+            tmp = df.loc[:, var_name]
+            new_val = tmp - tmp * float(baseline)
+        df.loc[:, var_name] = new_val
+        df.loc[:, var_name] = new_val
     else:
         raise ValueError("label must be either 'orig' or' 'perturb")
     probs = predict(model, df)
@@ -161,7 +154,7 @@ def static_prediction(model, target_data, score_preprocessing,
 
 def series_prediction(model, target_data, score_preprocessing,
                       timepoint, reverse, pad, var_name, epsilons,
-                      label='orig', baseline=None):
+                      label='orig', baseline=0):
     if label == 'orig':
         df = target_data.copy()
     elif label == 'perturb':
@@ -212,7 +205,7 @@ def z_perturbation(model, target_data,
                    epsilon_value=0,
                    reverse=True,
                    timeseries=False,
-                   baseline=None):
+                   baseline=0):
     '''
     Main method for computing a MAgEC. Assumes 'scaled/normalized' features in target data.
         Supporting 2 types of variables:
@@ -353,7 +346,7 @@ def create_magec_col(model_name, feature):
 
 
 def case_magecs(model, data, epsilon_value=0, model_name=None,
-                reverse=True, timeseries=False, baseline=None, binary=None):
+                reverse=True, timeseries=False, baseline=0, binary=None):
     """
     Compute MAgECs for every 'case' (individual row/member table).
     Use all features in data to compute MAgECs.
