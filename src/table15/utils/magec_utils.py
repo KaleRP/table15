@@ -305,16 +305,11 @@ def z_perturbation(model, target_data,
             logit_orig = base['logit_orig']
             logit_perturb = perturb['logit_perturb']
             logit_diff = score_comparison(logit_orig, logit_perturb)
-            # probs
-            probs_orig = base['probs_orig']
-            probs_perturb = perturb['probs_perturb']
-            probs_diff = score_comparison(probs_orig, probs_perturb)
             # store
             idx = target_data.index.get_level_values('timepoint') == tt
             prob_deltas_per_cell.loc[idx, var_name] = logit_diff
-            prob_deltas_per_cell.loc[idx, '{}_probs'.format(var_name)] = probs_diff
-            prob_deltas_per_cell.loc[idx, 'perturb_{}_prob'.format(var_name)] = probs_perturb
-            prob_deltas_per_cell.loc[idx, 'orig_prob'] = probs_orig
+            prob_deltas_per_cell.loc[idx, 'perturb_{}_prob'.format(var_name)] = perturb['probs_perturb']
+            prob_deltas_per_cell.loc[idx, 'orig_prob'] = base['probs_orig']
 
     return prob_deltas_per_cell.astype(float)
 
@@ -480,14 +475,12 @@ def magec_rank(magecs,
                 feat = create_magec_col(model, col)
                 assert feat in row, "feature {} not in magecs".format(feat)
                 magec = row[feat]
-                magec_prob = row[feat+'_probs']
                 # we are using a priority queue for the magec coefficients
                 # heapq is a min-pq, we are reversing the sign so that we can use a max-pq
-                metadata = (col, magec_prob)
                 if len(model_ranks[model]) < rank:
-                    heapq.heappush(model_ranks[model], (-magec, metadata))
+                    heapq.heappush(model_ranks[model], (-magec, col))
                 else:
-                    _ = heapq.heappushpop(model_ranks[model], (-magec, metadata))
+                    _ = heapq.heappushpop(model_ranks[model], (-magec, col))
                     # store magecs (top-N where N=rank) for each key ('case/timepoint')
         ranks[key] = model_ranks
         # create a Pandas dataframe with all magecs for a 'case/timepoint'
@@ -506,33 +499,25 @@ def magec_rank(magecs,
                 columns = ['case', 'timepoint']
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
-                magec, metadata = heapq.heappop(v[model])
-                feat, magec_prob = metadata
-                # Commenting out below code keeps all values, not just "positive" values
-                # Edit: not doing above comment now
+                magec, feat = heapq.heappop(v[model])
                 if magec < 0:  # negative magecs are originally positive magecs and are filtered out
                     l.append(None)
                     l.append("not_found")
-                    l.append(None)
                 else:
-                # if magec >= 0:
                     l.append(-magec)  # retrieve original magec sign
                     l.append(feat)
-                    l.append(magec_prob)
         out.append(l)
 
     out = pd.DataFrame.from_records(out)
     # create dataframe's columns
     for model in models:
         if rank == 1:
-            columns.append(model + '_mageclogits')
+            columns.append(model + '_magec')
             columns.append(model + '_feat')
-            columns.append(model + '_magecprobs')
         else:
             for r in range(rank, 0, -1):
-                columns.append(model + '_mageclogits_{}'.format(r))
+                columns.append(model + '_magec_{}'.format(r))
                 columns.append(model + '_feat_{}'.format(r))
-                columns.append(model + '_magecprobs_{}'.format(r))
     out.columns = columns
     out['case'] = out['case'].astype(magecs['case'].dtype)
     out['timepoint'] = out['timepoint'].astype(magecs['timepoint'].dtype)
