@@ -33,7 +33,7 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     # Train models
     print('Training models ...')
     models_dict = plutils.train_models(x_train_p, y_train_p, models, use_ensemble=use_ensemble)
-    print('Finished training models')
+    print(f'Finished training models {list(models_dict.keys())}')
 
     # Flag for single-process models
     has_tf_models = False
