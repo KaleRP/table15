@@ -1,10 +1,8 @@
 import multiprocessing as mp
-from nis import cat
-import os
 from collections import defaultdict
+from nis import cat
 from typing import Dict
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml

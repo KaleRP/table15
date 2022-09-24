@@ -1,27 +1,21 @@
 import heapq
+from collections import OrderedDict
+
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-from matplotlib.font_manager import FontProperties
-import seaborn as sns
-import plotly.offline as py
 import plotly.graph_objs as go
+import plotly.offline as py
 import plotly.tools as tls
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import roc_curve, precision_recall_curve, auc
-from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_predict
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import confusion_matrix
-from numpy import interp
 import rbo
-from collections import OrderedDict
-import time
+import seaborn as sns
+from matplotlib.font_manager import FontProperties
+from numpy import interp
+from sklearn.metrics import (accuracy_score, auc, confusion_matrix, f1_score,
+                             precision_recall_curve, precision_score,
+                             recall_score, roc_auc_score, roc_curve)
+from sklearn.model_selection import KFold, cross_val_predict, cross_val_score
 
 
 def get_logit_base2(prob, eps=1e-16):
