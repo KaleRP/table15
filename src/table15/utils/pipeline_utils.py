@@ -241,8 +241,6 @@ def run_magecs_multip(return_dict, clf, x_validation_p, y_validation_p, model_na
 
 def combine_baseline_runs(main_dict, to_combine_dict, baselines):
     for baseline in baselines:
-        if baseline is None:
-            baseline = 0
         main_dict[baseline].extend(to_combine_dict[baseline])
     return main_dict
 
@@ -298,19 +296,11 @@ def produce_output_df(output, features, baselines):
 def visualize_output(baseline_to_scores_df, baselines, features,  out_type='logits'):
     output = {}
     for baseline in baselines:
-        if baseline is None:
-            baseline = 0
         df_out = pd.DataFrame.from_records(baseline_to_scores_df[baseline][out_type])
-    
-        if baseline in [None, 0]:
-            baseline = 1.0
         output[baseline] = get_string_repr(df_out, features)
     
     # TODO: fix baselines upstream  to handle None as 0
     formatted_baselines = baselines.copy()
-    if None in baselines:
-        idx = formatted_baselines.index(None)
-        formatted_baselines[idx] = 1.0
 
     df_out =  produce_output_df(output, features, formatted_baselines)
     return df_out
