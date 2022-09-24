@@ -119,7 +119,6 @@ def slice_series(target_data, tt, reverse=True):
 def static_prediction(model, target_data, score_preprocessing,
                       timepoint, var_name, epsilons, label='orig', baseline=1.0):
     idx = target_data.index.get_level_values('timepoint') == timepoint
-    print(epsilons)
     if label == 'orig':
         df = target_data.loc[idx].copy()
     elif label == 'perturb':
@@ -127,13 +126,11 @@ def static_prediction(model, target_data, score_preprocessing,
         df = target_data.loc[idx].copy()
         if type(epsilons[var_name]) is list and len(epsilons[var_name]) == 2:
             # switch binary values
-            print('we are in binary!')
             new_val = (df.loc[:, var_name] == epsilons[var_name][0]).astype(int)
             new_val = new_val.multiply(epsilons[var_name][1]) + (1-new_val).multiply(epsilons[var_name][0])
         elif type(epsilons[var_name]) is list:
             raise ValueError('epsilon value can only be a scalar or have 2 values (binary)')
         else:
-            print('we are in numerical!')
             tmp = df.loc[:, var_name]
             new_val = tmp - tmp * float(baseline)
         df.loc[:, var_name] = new_val
