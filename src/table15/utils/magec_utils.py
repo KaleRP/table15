@@ -765,7 +765,7 @@ def magec_consensus(magec_ranks,
 def name_matching(cols, models):
     # get all magec column names
     col_names = dict()
-    for col in sorted(cols):
+    for col in cols:
         prefix = col.split('_')[0]
         if prefix in models:
             if prefix in col_names:
@@ -776,7 +776,7 @@ def name_matching(cols, models):
     magecs_feats = dict()
     for model, cols in col_names.items():
         feat2magic = dict()
-        # assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
+        assert len(cols) % 2 == 0, "magec/feat cols should come in pairs"
         if len(cols) == 2:
             if 'feat' in cols[0] and 'magec' in cols[1]:
                 feat2magic[cols[0]] = cols[1]
@@ -784,24 +784,15 @@ def name_matching(cols, models):
                 feat2magic[cols[1]] = cols[0]
             else:
                 raise ValueError('magec/feat substring not present in column names')
-        if len(cols) == 3:
-            assert 'probs' in cols[2]
-            if 'feat' in cols[0] and 'logits' in cols[1]:
-                feat2magic[cols[0]] = (cols[1], cols[2])
-            elif 'feat' in cols[1] and 'logits' in cols[0]:
-                feat2magic[cols[1]] = (cols[0], cols[2])
-            else:
-                raise ValueError('magec/feat substring not present in column names')
         else:
             # reversed names sorted (e.g. 1_taef_plm)
             feats = sorted([col[::-1] for col in cols if 'feat' in col])
             # reversed names sorted (e.g. 1_cegam_plm)
-            mageclogits = sorted([col[::-1] for col in cols if 'mageclogits' in col])
-            magecprobs = sorted([col[::-1] for col in cols if 'magecprobs' in col])
-            # assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
-            # assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
+            magecs = sorted([col[::-1] for col in cols if 'magec' in col])
+            assert len(feats) == len(cols) / 2, "'feat' substring missing in column name"
+            assert len(magecs) == len(cols) / 2, "'magec' substring missing in column name"
             for i, feat in enumerate(feats):
-                feat2magic[feat[::-1]] = (mageclogits[i][::-1], magecprobs[i][::-1])
+                feat2magic[feat[::-1]] = magecs[i][::-1]
         # return dictionary with magec feature column names and magec value column name for every model
         magecs_feats[model] = feat2magic
     return magecs_feats
