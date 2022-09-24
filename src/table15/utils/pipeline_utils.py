@@ -8,7 +8,7 @@ import pandas as pd
 import yaml
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
-from keras.wrappers.scikit_learn import KerasClassifier
+from scikeras.wrappers import KerasClassifier
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.linear_model import LogisticRegression
