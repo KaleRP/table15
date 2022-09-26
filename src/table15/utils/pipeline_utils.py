@@ -207,7 +207,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
 
 
 def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, baseline=None, features=None):
-    print('Starting single:', key)
+    print('Starting single-process:', key)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
     else:
@@ -222,7 +222,7 @@ def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, base
 
 def run_magecs_multip(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline=None, features=None):
     p_name = mp.current_process().name
-    print('Starting multi:', p_name)
+    print('Starting multi-process:', p_name)
     if model_name == 'lstm':
         magecs = mg.case_magecs(clf, x_validation_p, model_name=model_name, baseline=baseline, timeseries=True)
     else:
