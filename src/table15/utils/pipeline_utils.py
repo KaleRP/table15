@@ -270,6 +270,8 @@ def agg_scores(ranked_df, policy='mean', models=('mlp', 'rf', 'lr')):
 
 def get_string_repr(df, feats):
     base_strings = []
+    print(feats)
+    print(df)
     for feat in feats:
         mean = round(df[feat].mean(), 4)
         # std = round(df[feat].std(), 4)
