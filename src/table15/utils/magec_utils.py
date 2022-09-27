@@ -380,8 +380,6 @@ def normalize_magecs(magecs,
     for (idx, row) in out.iterrows():
         norm = np.linalg.norm(row.loc[cols].values)
         out.loc[idx, cols] = out.loc[idx, cols] / norm
-        # Convert ln(OR) to OR
-        out.loc[idx, cols] = np.exp(out.loc[idx, cols])
     return out
 
 
@@ -496,7 +494,6 @@ def magec_rank(magecs,
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
                 magec, feat = heapq.heappop(v[model])
-                print(magec)
                 if magec < 0:  # negative magecs are originally positive magecs and are filtered out
                     l.append(None)
                     l.append("not_found")
@@ -865,19 +862,23 @@ def magec_scores(magecs_feats,
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
-            logits_score = row[score_col]
-            if logits_score in [None, 'nan']:
+
+            score = row[score_col]
+            # Convert ln(OR) to OR
+            score = np.exp(score)
+
+            if score in [None, 'nan']:
                 continue
-            logits_score = scoring(logits_score)
+            score = scoring(score)
 
             if use_weights:
                 if weights[model] is not None:
-                    logits_score *= weights[model]
+                    score *= weights[model]
             if feat in scores:
-                scores[feat] += logits_score
+                scores[feat] += score
                 consensus[feat].append(model)
             else:
-                scores[feat] = logits_score
+                scores[feat] = score
                 consensus[feat] = [model]
     if policy == 'mean':
         for feat, score in scores.items():
