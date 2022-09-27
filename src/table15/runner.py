@@ -69,8 +69,6 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
             models_dict, x_validation_p, y_validation_p, baselines, features, mp_manager=None)
 
     baseline_to_scores_df, all_joined_dfs = plutils.score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, policy)
-    print(baseline_to_scores_df)
-    print(baseline_to_scores_df[0.5])
 
     df_logits_out = plutils.visualize_output(baseline_to_scores_df, baselines, features)
 
