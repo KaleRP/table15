@@ -496,6 +496,7 @@ def magec_rank(magecs,
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
                 magec, feat = heapq.heappop(v[model])
+                print(magec)
                 if magec < 0:  # negative magecs are originally positive magecs and are filtered out
                     l.append(None)
                     l.append("not_found")
