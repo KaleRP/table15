@@ -819,7 +819,8 @@ def magec_winner(magecs_feats,
             feat = row[feat_col]
             if feat == 'not_found':
                 continue
-            score = scoring(row[score_col])
+            # score = scoring(row[score_col])
+            score = row[score_col]
             if use_weights:
                 if weights[model] is not None:
                     score *= weights[model]
