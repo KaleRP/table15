@@ -36,6 +36,7 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     
     df_logits_out_bin, all_joined_dfs_bin = plutils.generate_table_by_feature_type(
         configs, x_validation_p, y_validation_p, models_dict, model_feat_imp_dict, set_feature_values, feature_type='binary')
+    
     if df_logits_out_num is not None:
         print(df_logits_out_num.head(20))
     if df_logits_out_bin is not None:

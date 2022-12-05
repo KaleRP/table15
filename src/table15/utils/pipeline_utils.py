@@ -15,7 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from . import magec_utils as mg
+from table15.utils import magec_utils as mg
 
 
 def yaml_parser(yaml_path):
@@ -263,7 +263,7 @@ def combine_baseline_runs(main_dict, to_combine_dict, baselines):
     return main_dict
 
 
-def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, policy):
+def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, policy, num_models_rank=None):
     baseline_to_scores_df = {}
     all_joined_dfs = {}
     for baseline, model_runs in baseline_runs.items():
@@ -271,7 +271,7 @@ def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, fea
                             Xdata=x_validation_p,
                             Ydata=y_validation_p,
                             features=features)
-        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=num_models_rank, features=features, models=models)
         scores_df = agg_scores(baseline_ranked_df, model_feat_imp_dict, policy=policy, models=models)
 
         all_joined_dfs[baseline] = baseline_joined
@@ -345,6 +345,7 @@ def generate_table_by_feature_type(configs, x_validation_p, y_validation_p, mode
     use_ensemble = get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
     policy = get_from_configs(configs, 'POLICY', param_type='CONFIGS')
     skip_multiprocessing = get_from_configs(configs, 'SKIP_MULTIPROCESSING', param_type='MODELS')
+    num_models_rank = get_from_configs(configs, 'NUM_MODELS_RANK', param_type='MODELS')
 
     if feature_type == 'numerical':
         features = get_from_configs(configs, 'NUMERICAL', param_type='FEATURES')
@@ -371,7 +372,8 @@ def generate_table_by_feature_type(configs, x_validation_p, y_validation_p, mode
         baseline_runs = generate_perturbation_predictions(
             models_dict, x_validation_p, y_validation_p, baselines, features, feature_type, set_feature_values, mp_manager=None)
 
-    baseline_to_scores_df, all_joined_dfs = score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, policy)
+    baseline_to_scores_df, all_joined_dfs = score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, 
+                                                                      policy, num_models_rank=num_models_rank)
 
     df_logits_out = visualize_output(baseline_to_scores_df, baselines, features)
 
