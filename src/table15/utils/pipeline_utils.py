@@ -15,7 +15,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from table15.utils import magec_utils as mg
+# from table15.utils import magec_utils as mg
+from . import magec_utils as mg
 
 
 def yaml_parser(yaml_path):
@@ -52,12 +53,19 @@ def generate_data(configs: Dict):
     set_feature_values = get_from_configs(configs, 'SET_FEATURE_VALUES', param_type='FEATURES')
 
     random_seed = get_from_configs(configs, 'RANDOM_SEED', param_type='HYPERPARAMS')
+    n_samples = get_from_configs(configs, 'N_SAMPLES', param_type='CONFIGS')
     test_size = get_from_configs(configs, 'TEST_SIZE', param_type='HYPERPARAMS')
 
+    if set_feature_values is None:
+        set_feature_values = dict()
+        
     df = pd.read_csv(csv_path)
 
     if random_seed is not None:
         np.random.seed(random_seed)
+        
+    if n_samples is not None:
+        df = df.sample(n=n_samples)
 
     x_num = df.loc[:, numerical_features]
     x_num = impute(x_num)
@@ -169,7 +177,6 @@ def train_models(x_train_p, y_train_p, x_test_p, models, use_ensemble=False):
         mlp.fit(x_train_p, y_train_p, epochs=100, batch_size=64, verbose=0)
         model_feat_imp_dict['mlp'] = dict(zip(features, get_shap_values(mlp, x_train_p, x_test_p).ravel()))
         estimators.append(('mlp', mlp))
-        print(model_feat_imp_dict['mlp'])
     
     # Seems to be an issue using KerasClassifier (for ensemble) with a pretrained model when calling predict downstream
     if use_ensemble:
@@ -263,7 +270,7 @@ def combine_baseline_runs(main_dict, to_combine_dict, baselines):
     return main_dict
 
 
-def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, policy, num_models_rank=None):
+def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, policy, num_models_rank):
     baseline_to_scores_df = {}
     all_joined_dfs = {}
     for baseline, model_runs in baseline_runs.items():
@@ -271,20 +278,21 @@ def score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, fea
                             Xdata=x_validation_p,
                             Ydata=y_validation_p,
                             features=features)
-        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=num_models_rank, features=features, models=models)
-        scores_df = agg_scores(baseline_ranked_df, model_feat_imp_dict, policy=policy, models=models)
+        baseline_ranked_df = mg.magec_rank(baseline_joined, rank=len(features), features=features, models=models)
+        scores_df = agg_scores(baseline_ranked_df, model_feat_imp_dict, policy=policy, models=models, num_models_rank=num_models_rank)
 
         all_joined_dfs[baseline] = baseline_joined
         baseline_to_scores_df[baseline] = scores_df
     return baseline_to_scores_df, all_joined_dfs
 
 
-def agg_scores(ranked_df, model_feat_imp_dict, policy='mean', models=('mlp', 'rf', 'lr')):
+def agg_scores(ranked_df, model_feat_imp_dict, policy='mean', models=('mlp', 'rf', 'lr'), num_models_rank=None):
     cols = list(set(ranked_df.columns) - {'case', 'timepoint', 'Outcome'})
     magecs_feats = mg.name_matching(cols, models)
     out = list()
     for (idx, row) in ranked_df.iterrows():
-        scores = mg.magec_scores(magecs_feats, row, model_feat_imp_dict, use_weights=False, policy=policy)
+        scores = mg.magec_scores(magecs_feats, row, model_feat_imp_dict, use_weights=False,
+                                 policy=policy, num_models_rank=num_models_rank)
         out.append(scores)
     
     return pd.DataFrame.from_records(out)
@@ -373,7 +381,7 @@ def generate_table_by_feature_type(configs, x_validation_p, y_validation_p, mode
             models_dict, x_validation_p, y_validation_p, baselines, features, feature_type, set_feature_values, mp_manager=None)
 
     baseline_to_scores_df, all_joined_dfs = score_models_per_baseline(baseline_runs, x_validation_p, y_validation_p, features, models, model_feat_imp_dict, 
-                                                                      policy, num_models_rank=num_models_rank)
+                                                                      policy, num_models_rank)
 
     df_logits_out = visualize_output(baseline_to_scores_df, baselines, features)
 
@@ -382,6 +390,7 @@ def generate_table_by_feature_type(configs, x_validation_p, y_validation_p, mode
 
 def baseline_runs_via_multip(models_dict, x_validation_p, y_validation_p, baselines, features, feature_type, set_feature_values, use_ensemble=True):
     # Flag for single-process models
+    has_tf_models = False
     if 'mlp' in models_dict:
         has_tf_models = True
 

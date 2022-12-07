@@ -46,8 +46,9 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
 
 if __name__ == '__main__':
     # config_path = sys.argv[1]
-    config_path = '/Users/ag46548/tmp/t15_configs/t15_stroke.yaml'
+    # config_path = '/Users/ag46548/tmp/t15_configs/t15_stroke.yaml'
     # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pima_diabetes.yaml"
+    config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/synth_data_configs.yaml"
     if config_path:
         df_logits_out, all_joined_dfs = run(configs_path=config_path)
     else:
