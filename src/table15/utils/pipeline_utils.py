@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -10,13 +10,13 @@ import yaml
 from . import magec_utils as mg
 
 
-def yaml_parser(yaml_path):
+def yaml_parser(yaml_path: str) -> Dict:
     with open(yaml_path, 'r') as file:
         parsed_yaml = yaml.safe_load(file)
     return parsed_yaml
 
     
-def get_from_configs(configs: Dict, key: str, param_type: str=None):
+def get_from_configs(configs: Dict, key: str, param_type: str=None) -> Optional[Dict]:
     key = key.upper()
     if param_type in configs and key in configs[param_type]:
         return configs[param_type][key]
@@ -61,10 +61,7 @@ def generate_perturbation_predictions(models_dict, x_validation_p, y_validation_
 
 def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, baseline, features, feature_type, set_feature_values):
     print('Starting single-process:', key)
-    is_timeseries = False
-    if model_name == 'lstm':
-        is_timeseries = True
-    magecs = mg.case_magecs(clf, x_validation_p, features, feature_type, set_feature_values, model_name=model_name, baseline=baseline, timeseries=is_timeseries)
+    magecs = mg.case_magecs(clf, x_validation_p, features, feature_type, set_feature_values, model_name=model_name, baseline=baseline)
     print('Magecs for {} computed...'.format(key))
     magecs = mg.normalize_magecs(magecs, features=features, model_name=model_name)
     print('Magecs for {} normalized...'.format(key))
@@ -76,10 +73,7 @@ def run_magecs_single(clf, x_validation_p, y_validation_p, model_name, key, base
 def run_magecs_multip(return_dict, clf, x_validation_p, y_validation_p, model_name, baseline, features, feature_type, set_feature_values):
     p_name = mp.current_process().name
     print('Starting multi-process:', p_name)
-    is_timeseries = False
-    if model_name == 'lstm':
-        is_timeseries = True
-    magecs = mg.case_magecs(clf, x_validation_p, features, feature_type, set_feature_values, model_name=model_name, baseline=baseline, timeseries=is_timeseries)
+    magecs = mg.case_magecs(clf, x_validation_p, features, feature_type, set_feature_values, model_name=model_name, baseline=baseline)
     print('Magecs for {} computed...'.format(p_name))
     magecs = mg.normalize_magecs(magecs, features=features, model_name=model_name)
     print('Magecs for {} normalized...'.format(p_name))

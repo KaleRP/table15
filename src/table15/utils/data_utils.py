@@ -138,6 +138,11 @@ class DataUtils:
         meadians = self.x_validation.median()
         self.validation_stats_dict["median"] = meadians
 
-        
-        
+    def get_features_by_type(self, feature_type):
+        features_type_to_features = {
+            "numerical": self.numerical_features,
+            "binary": self.binary_features,
+            "categorical": self.categorical_features
+        }
+        return features_type_to_features.get(feature_type, None)
         

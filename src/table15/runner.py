@@ -20,7 +20,7 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     
     # TODO: adjust spawn method to start WITH multiprocessing. Most likely with mp.Pool()
 
-    print('This is Version: 0.0.24')
+    print('This is Version: 0.0.26')
 
     configs = plutils.yaml_parser(configs_path)
     models = plutils.get_from_configs(configs, 'MODELS', param_type='CONFIGS')
@@ -29,31 +29,28 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
     dutils = DataUtils().generate_data(configs)
 
     # Train models
-    print('Training models ...')
     mutils = ModelUtils(dutils.x_train_p, dutils.y_train_p, dutils.x_validation_p)
+    print('Training models ...')
     models_dict = mutils.train_models(models)
-    model_feat_imp_dict = mutils.extract_feature_importance_from_models(models_dict)
     print(f'Finished generating models {list(models_dict.keys())}')
+    
+    model_feat_imp_dict = mutils.extract_feature_importance_from_models(models_dict)
 
-    df_logits_out_num, all_joined_dfs_num = plutils.generate_table_by_feature_type(
-        configs, dutils.x_validation_p, dutils.y_validation_p, models_dict, model_feat_imp_dict, dutils.set_feature_values, dutils.validation_stats_dict, 
-        dutils.numerical_features, feature_type='numerical')
+    df_logits_out_by_feature_types = []
+    all_joined_dfs_by_feature_types = []
+    feature_types = ["numerical", "binary", "categorical"]
+    for feature_type in feature_types:
+        df_logits_out, all_joined_dfs = plutils.generate_table_by_feature_type(
+            configs, dutils.x_validation_p, dutils.y_validation_p, models_dict, model_feat_imp_dict, dutils.set_feature_values, dutils.validation_stats_dict, 
+            dutils.get_features_by_type(feature_type), feature_type=feature_type)
+        df_logits_out_by_feature_types.append(df_logits_out)
+        all_joined_dfs_by_feature_types.append(all_joined_dfs)
     
-    df_logits_out_bin, all_joined_dfs_bin = plutils.generate_table_by_feature_type(
-        configs, dutils.x_validation_p, dutils.y_validation_p, models_dict, model_feat_imp_dict, dutils.set_feature_values, dutils.validation_stats_dict, 
-        dutils.binary_features, feature_type='binary')
-    
-    df_logits_out_cat, all_joined_dfs_cat = plutils.generate_table_by_feature_type(
-        configs, dutils.x_validation_p, dutils.y_validation_p, models_dict, model_feat_imp_dict, dutils.set_feature_values, dutils.validation_stats_dict, 
-        dutils.categorical_features, feature_type='categorical')
-    
-    if df_logits_out_num is not None:
-        print(df_logits_out_num.head(20))
-    if df_logits_out_bin is not None:
-        print(df_logits_out_bin.head(20))
-    if df_logits_out_cat is not None:
-        print(df_logits_out_cat.head(20))
-    return [df_logits_out_num, df_logits_out_bin, df_logits_out_cat], [all_joined_dfs_num, all_joined_dfs_bin, all_joined_dfs_cat]
+    for df in df_logits_out_by_feature_types:
+        if df is not None:
+            print(df.head(20))
+            
+    return df_logits_out_by_feature_types, all_joined_dfs_by_feature_types
 
 
 if __name__ == '__main__':
