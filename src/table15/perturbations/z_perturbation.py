@@ -47,9 +47,13 @@ class Z_Perturbation(Perturbation):
             # logits
             logit_orig = base_df['logit_orig']
             logit_perturb = perturb_df['logit_perturb']
-            logit_diff = self.score_comparison(logit_orig, logit_perturb)
+            # logit_diff = self.score_comparison(logit_orig, logit_perturb)
+            # Odds ratios
+            odds_orig = np.exp(logit_orig)
+            odds_perturb = np.exp(logit_perturb)
+            odds_ratio = odds_perturb / (odds_orig + 1e-16)
             # store
-            prob_deltas_per_cell[var_name] = logit_diff
+            prob_deltas_per_cell[var_name] = odds_ratio
             prob_deltas_per_cell[f'perturb_{var_name}_prob'] = perturb_df['probs_perturb']
             prob_deltas_per_cell['orig_prob'] = base_df['probs_orig']
 

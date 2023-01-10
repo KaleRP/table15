@@ -11,12 +11,18 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 
 
-class ModelUtils:
-    def __init__(self, x_train, y_train, x_test=None):
+class ModelsContainer:
+    def __init__(self, models):
+        self.models = models
+        self.models_dict = None
+        self.model_feat_imp_dict = None
+
+
+    def populate_data_tables(self, x_train, y_train, x_test=None):
         self.x_train = x_train
         self.y_train = y_train
         self.x_test = x_test
-
+        return self
 
     def model_constructor(self, model_name):
         if model_name == "lr":
@@ -43,6 +49,7 @@ class ModelUtils:
         
         raise ValueError(f"Model {model_name} not found!")
         
+        
     def mean_calibrated_clf_cv_importances(self, calibrated_clf_cv):
         calibrated_clfs = calibrated_clf_cv.calibrated_classifiers_
         features = calibrated_clf_cv.feature_names_in_
@@ -51,6 +58,7 @@ class ModelUtils:
         for i, calibrated_clf in enumerate(calibrated_clfs):
             feat_imps[i] = calibrated_clf.base_estimator.feature_importances_
         return np.mean(feat_imps, axis=0)
+    
     
     def get_fit_params(self, model_name):
         if model_name == "mlp":
@@ -66,10 +74,11 @@ class ModelUtils:
     
     
     def train_models(self, models):
-        models_dict = dict()
+        print('Training models ...')
+        self.models_dict = dict()
         for model_name in models:
             clf = self.train_single_model(model_name)
-            models_dict[model_name] = clf
+            self.models_dict[model_name] = clf
             print(f"Finished training {model_name} model")
         # # Seems to be an issue using KerasClassifier (for ensemble) with a pretrained model when calling predict downstream
         # if use_ensemble:
@@ -77,7 +86,8 @@ class ModelUtils:
         #     ensemble = VotingClassifier(estimators, voting='soft')
         #     ensemble._estimator_type = "classifier"
         #     ensemble.fit(x_train_p, y_train_p)
-        return models_dict
+        print(f'Finished generating models {list(self.models_dict.keys())}')
+        return self
 
     
     def l2_normalize_list(self, li, is_abs=False):
@@ -89,16 +99,20 @@ class ModelUtils:
         return ret
 
 
-    def extract_feature_importance_from_models(self, models_dict):
-        model_feat_imp_dict = defaultdict(dict)
+    def store_feature_importance_from_models(self):
+        if self.models_dict is None:
+            raise ValueError("Models have not been trained yet")
+        
+        self.model_feat_imp_dict = defaultdict(dict)
         features = self.x_train.columns
-        for model_name, clf in models_dict.items():
+        for model_name, clf in self.models_dict.items():
             model_feature_importance = self.extract_model_feature_importance(model_name, clf)
             # Normalize feature importance per model
             model_feature_importance = self.l2_normalize_list(model_feature_importance, is_abs=True)
             feature_to_importance = dict(zip(features, model_feature_importance))
-            model_feat_imp_dict[model_name] = feature_to_importance 
-        return model_feat_imp_dict
+            self.model_feat_imp_dict[model_name] = feature_to_importance 
+        print("Extracted model feature importances")
+        return self
 
 
     def create_mlp(self):
@@ -110,6 +124,7 @@ class ModelUtils:
         mlp.add(Dense(1, activation='sigmoid'))
         mlp.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         return mlp
+
 
     def get_shap_values(self, model, explainer_type):
         background = shap.sample(self.x_train.to_numpy(), 50)

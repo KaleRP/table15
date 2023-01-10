@@ -1,7 +1,7 @@
 from src.table15.utils.magec_utils import *
-from src.table15.utils.model_utils import ModelUtils
+from src.table15.utils.models_container import ModelsContainer
 from src.table15.utils import pipeline_utils as plutils
-from src.table15.utils.data_utils import DataUtils
+from src.table15.utils.data_tables import DataTables
 from src.table15.models.test_linear_model import TestBasicModel
 
 import pytest
@@ -15,8 +15,8 @@ def data_and_model():
     yaml_path = "/Users/ag46548/dev/github/KaleRP/table15/tests/configs/t_configs.yaml"
     configs = plutils.yaml_parser(yaml_path)
     
-    dutils = DataUtils().generate_data(configs)
-    mutils = ModelUtils(dutils.x_train_p, dutils.y_train_p, dutils.x_validation_p)
+    dutils = DataTables().generate_data(configs)
+    mutils = ModelsContainer(dutils.x_train_p, dutils.y_train_p, dutils.x_validation_p)
     return dutils, mutils
 
 

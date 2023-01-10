@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from . import pipeline_utils as plutils
 
 
-class DataUtils:
+class DataTables:
     def __init__(self):
         self.df = None
         self.features = None
@@ -83,24 +83,26 @@ class DataUtils:
         self.x_validation = self.x_validation[self.x_validation.index.isin(self.Y_validation.index)]
 
         stsc = StandardScaler()
+        
+        xst_train = x_train
+        xst_validation = self.x_validation
+        if len(numerical_features) > 0:
+            xst_train = stsc.fit_transform(x_train[numerical_features])
+            xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=numerical_features)
+            xst_train = pd.concat([xst_train, x_train[non_numerical_features]], axis=1)
 
-        xst_train = stsc.fit_transform(x_train[numerical_features])
-        xst_train = pd.DataFrame(xst_train, index=x_train.index, columns=numerical_features)
-        xst_train = pd.concat([xst_train, x_train[non_numerical_features]], axis=1)
+            xst_validation = stsc.transform(self.x_validation[numerical_features])
+            xst_validation = pd.DataFrame(xst_validation, index=self.x_validation.index, columns=numerical_features)
+            xst_validation = pd.concat([xst_validation, self.x_validation[non_numerical_features]], axis=1)
             
-        xst_validation = stsc.transform(self.x_validation[numerical_features])
-        xst_validation = pd.DataFrame(xst_validation, index=self.x_validation.index, columns=numerical_features)
-        xst_validation = pd.concat([xst_validation, self.x_validation[non_numerical_features]], axis=1)
+            self.rescale_set_feature_values_dict(stsc, numerical_features)
 
         # Format
         self.x_train_p = self.format_df(xst_train.copy())
         self.y_train_p = self.format_df(Y_train.copy())
         self.x_validation_p = self.format_df(xst_validation.copy())
-        self.y_validation_p= self.format_df(self.Y_validation.copy())
+        self.y_validation_p = self.format_df(self.Y_validation.copy())
         
-        
-        
-        self.rescale_set_feature_values_dict(stsc, numerical_features)
         
         self.generate_validation_stats()
 
@@ -128,7 +130,6 @@ class DataUtils:
 
 
     def generate_validation_stats(self):
-        
         means = self.x_validation.mean()
         self.validation_stats_dict["mean"] = means
         

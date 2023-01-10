@@ -3,8 +3,8 @@ import warnings
 from multiprocessing import set_start_method
 
 import utils.pipeline_utils as plutils
-from utils.model_utils import ModelUtils
-from utils.data_utils import DataUtils
+from utils.models_container import ModelsContainer
+from utils.data_tables import DataTables
 
 
 def run(configs_path='./configs/pima_diabetes.yaml'):
@@ -24,25 +24,22 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
 
     configs = plutils.yaml_parser(configs_path)
     models = plutils.get_from_configs(configs, 'MODELS', param_type='CONFIGS')
-    use_ensemble = plutils.get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
+    # use_ensemble = plutils.get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
     
-    dutils = DataUtils().generate_data(configs)
+    data_tables = DataTables() \
+        .generate_data(configs)
 
-    # Train models
-    mutils = ModelUtils(dutils.x_train_p, dutils.y_train_p, dutils.x_validation_p)
-    print('Training models ...')
-    models_dict = mutils.train_models(models)
-    print(f'Finished generating models {list(models_dict.keys())}')
-    
-    model_feat_imp_dict = mutils.extract_feature_importance_from_models(models_dict)
+    # Generate and train models
+    models_container = ModelsContainer(models) \
+        .populate_data_tables(data_tables.x_train_p, data_tables.y_train_p, data_tables.x_validation_p) \
+        .train_models(models) \
+        .store_feature_importance_from_models()
 
     df_logits_out_by_feature_types = []
     all_joined_dfs_by_feature_types = []
     feature_types = ["numerical", "binary", "categorical"]
     for feature_type in feature_types:
-        df_logits_out, all_joined_dfs = plutils.generate_table_by_feature_type(
-            configs, dutils.x_validation_p, dutils.y_validation_p, models_dict, model_feat_imp_dict, dutils.set_feature_values, dutils.validation_stats_dict, 
-            dutils.get_features_by_type(feature_type), feature_type=feature_type)
+        df_logits_out, all_joined_dfs = plutils.generate_table_by_feature_type(configs, data_tables, models_container, feature_type=feature_type)
         df_logits_out_by_feature_types.append(df_logits_out)
         all_joined_dfs_by_feature_types.append(all_joined_dfs)
     

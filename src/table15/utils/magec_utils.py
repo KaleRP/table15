@@ -195,12 +195,13 @@ def magec_rank(magecs,
         for model in models:
             while v[model]:  # retrieve priority queue's magecs (max-pq with negated (positive) magecs)
                 neg_magec, feat = heapq.heappop(v[model])
-                # if neg_magec < 0.1:  # negative magecs are originally positive magecs and are filtered out
-                #     l.append(None)
-                #     l.append("not_found")
-                # else:
-                l.append(-neg_magec)  # retrieve original magec sign
-                l.append(feat)
+                # if neg_magec < 0:  # negative magecs are originally positive magecs and are filtered out
+                if neg_magec <= -1:
+                    l.append(None)
+                    l.append("not_found")
+                else:
+                    l.append(-neg_magec)  # retrieve original magec sign
+                    l.append(feat)
         out.append(l)
 
     out = pd.DataFrame.from_records(out)
@@ -265,8 +266,8 @@ def magec_scores(magecs_feats,
             feat_imp_weight = model_feat_imp_dict[model][feat]
             score *= feat_imp_weight
             
-            # Convert ln(OR) to OR
-            score = np.exp(score)
+            # # Convert ln(OR) to OR
+            # score = np.exp(score)
 
             if score in [None, 'nan']:
                 continue
