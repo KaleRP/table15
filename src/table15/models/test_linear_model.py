@@ -1,13 +1,6 @@
-from abc import ABC, abstractmethod
+from model import BaseModel
 import numpy as np
 
-class Model(ABC):
-    
-    @abstractmethod
-    def predict_proba(self, data):
-        pass
-
-class TestBasicModel(Model):
+class TestBasicModel(BaseModel):
     def predict_proba(self, data):
         return np.array([[0.5] * 2] * len(data))
-        

@@ -1,6 +1,7 @@
 import os
 import warnings
 from multiprocessing import set_start_method
+from src.table15.configs import Configs
 
 import utils.pipeline_utils as plutils
 from utils.models_container import ModelsContainer
@@ -22,22 +23,25 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
 
     print('This is Version: 0.0.26')
 
-    configs = plutils.yaml_parser(configs_path)
-    models = plutils.get_from_configs(configs, 'MODELS', param_type='CONFIGS')
-    # use_ensemble = plutils.get_from_configs(configs, 'USE_ENSEMBLE', param_type='MODELS')
+    configs = Configs(configs_path)
+    models_configs_paths = configs.get_from_configs('MODEL_CONFIGS_PATHS', param_type='MODELS')
+    
+    use_feature_importance_scaling = configs.get_from_configs('USE_FEATURE_IMPORTANCE_SCALING', param_type='MODELS')
+    ensemble_configs_path = configs.get_from_configs('ENSEMBLE_CONFIGS_PATH', param_type='MODELS')
     
     data_tables = DataTables() \
         .generate_data(configs)
 
     # Generate and train models
-    models_container = ModelsContainer(models) \
+    models_container = ModelsContainer() \
         .populate_data_tables(data_tables.x_train_p, data_tables.y_train_p, data_tables.x_validation_p) \
-        .train_models(models) \
-        .store_feature_importance_from_models()
+        .load_models(models_configs_paths, ensemble_configs_path=ensemble_configs_path) \
+        .train_models() \
+        .store_feature_importance_from_models(use_feature_importance_scaling=use_feature_importance_scaling)
 
     df_logits_out_by_feature_types = []
     all_joined_dfs_by_feature_types = []
-    feature_types = ["numerical", "binary", "categorical"]
+    feature_types = ["numerical", "binary", "categorical", "grouped"]
     for feature_type in feature_types:
         df_logits_out, all_joined_dfs = plutils.generate_table_by_feature_type(configs, data_tables, models_container, feature_type=feature_type)
         df_logits_out_by_feature_types.append(df_logits_out)
@@ -51,11 +55,12 @@ def run(configs_path='./configs/pima_diabetes.yaml'):
 
 
 if __name__ == '__main__':
-    # config_path = sys.argv[1]
-    config_path = '/Users/ag46548/tmp/t15_configs/t15_stroke.yaml'
-    # config_path = '/Users/ag46548/tmp/t15_configs/t15_diabs.yaml'
-    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pima_diabetes.yaml"
-    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/synth_data_configs.yaml"
+    
+    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/linear.yaml"
+    
+    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/pima.yaml"
+    config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/stroke.yaml"
+    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/synth_data.yaml"
     if config_path:
         df_logits_out, all_joined_dfs = run(configs_path=config_path)
     else:

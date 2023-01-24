@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict
 
 import numpy as np
@@ -5,7 +7,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from . import pipeline_utils as plutils
+from src.table15.configs import Configs
 
 
 class DataTables:
@@ -15,6 +17,7 @@ class DataTables:
         self.numerical_features = None
         self.binary_features = None
         self.categorical_features = None
+        self.grouped_features = None
         self.x_train_p = None
         self.x_validation_p = None
         self.y_train_p = None
@@ -24,7 +27,7 @@ class DataTables:
         self.validation_stats_dict = {}
         self.set_feature_values = None
     
-    def generate_data(self, configs: Dict):
+    def generate_data(self, configs: Configs) -> DataTables:
         def impute(df):
             out = df.copy()
             cols = df.columns
@@ -32,18 +35,19 @@ class DataTables:
             out[cols] = out[cols].fillna(out[cols].mean())
             return out
 
-        csv_path = plutils.get_from_configs(configs, 'CSV_PATH')
+        csv_path = configs.get_from_configs('CSV_PATH')
 
-        numerical_features = plutils.get_from_configs(configs, 'NUMERICAL', param_type='FEATURES')
-        categorical_features = plutils.get_from_configs(configs, 'CATEGORICAL', param_type='FEATURES')
-        binary_features = plutils.get_from_configs(configs, 'BINARY', param_type='FEATURES')
-        target_feature = plutils.get_from_configs(configs, 'TARGET', param_type='FEATURES')
+        numerical_features = configs.get_from_configs('NUMERICAL', param_type='FEATURES')
+        categorical_features = configs.get_from_configs('CATEGORICAL', param_type='FEATURES')
+        binary_features = configs.get_from_configs('BINARY', param_type='FEATURES')
+        target_feature = configs.get_from_configs('TARGET', param_type='FEATURES')
         
-        self.set_feature_values = plutils.get_from_configs(configs, 'SET_FEATURE_VALUES', param_type='FEATURES')
+        self.grouped_features = configs.get_from_configs('GROUPED', param_type='FEATURES')
+        self.set_feature_values = configs.get_from_configs('SET_FEATURE_VALUES', param_type='FEATURES')
 
-        random_seed = plutils.get_from_configs(configs, 'RANDOM_SEED', param_type='HYPERPARAMS')
-        n_samples = plutils.get_from_configs(configs, 'N_SAMPLES', param_type='CONFIGS')
-        test_size = plutils.get_from_configs(configs, 'TEST_SIZE', param_type='HYPERPARAMS')
+        random_seed = configs.get_from_configs('RANDOM_SEED', param_type='HYPERPARAMS')
+        n_samples = configs.get_from_configs('N_SAMPLES', param_type='CONFIGS')
+        test_size = configs.get_from_configs('TEST_SIZE', param_type='HYPERPARAMS')
 
         if self.set_feature_values is None:
             self.set_feature_values = dict()
@@ -71,6 +75,10 @@ class DataTables:
         
         non_numerical_features = self.binary_features + self.categorical_features
         self.features = self.numerical_features + non_numerical_features
+        # for group in self.grouped_features:
+        #     for feat in group:
+        #         if feat not in self.features:
+        #             self.features += feat
 
         x = pd.concat([x_num, x_bin, x_cat], axis=1)
 
@@ -79,8 +87,8 @@ class DataTables:
         x_train, self.x_validation, Y_train, self.Y_validation = train_test_split(x, Y, test_size=test_size, random_state=random_seed)
         
         # Only test (get Magecs for) sick patients
-        self.Y_validation = self.Y_validation[self.Y_validation[target_feature[0]] == 1.]
-        self.x_validation = self.x_validation[self.x_validation.index.isin(self.Y_validation.index)]
+        # self.Y_validation = self.Y_validation[self.Y_validation[target_feature[0]] == 1.]
+        # self.x_validation = self.x_validation[self.x_validation.index.isin(self.Y_validation.index)]
 
         stsc = StandardScaler()
         
@@ -143,7 +151,8 @@ class DataTables:
         features_type_to_features = {
             "numerical": self.numerical_features,
             "binary": self.binary_features,
-            "categorical": self.categorical_features
+            "categorical": self.categorical_features,
+            "grouped": self.grouped_features
         }
         return features_type_to_features.get(feature_type, None)
         

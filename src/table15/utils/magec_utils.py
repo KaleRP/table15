@@ -3,8 +3,9 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
+from src.table15.perturbations.group_perturbation import GroupPerturbation
 
-from src.table15.perturbations.z_perturbation import Z_Perturbation
+from src.table15.perturbations.z_perturbation import ZPerturbation
 
 
 
@@ -15,6 +16,8 @@ def m_prefix(magecs, feature, model_name=None):
     prefix = 'm'
     for c in magecs.columns:
         splits = c.split('_')
+        if isinstance(feature, list):
+            feature = "::".join(feature)
         if len(splits) > 1 and feature == '_'.join(splits[1:]):
             prefix = splits[0]
             if model_name is not None:
@@ -60,20 +63,29 @@ def name_matching(cols, models):
 
 
 def create_magec_col(model_name, feature):
+    if isinstance(feature, list):
+        feature = "::".join(feature)
     return model_name + '_' + feature
 
 
-def case_magecs(model, data, features, feature_type, set_feature_values, model_name=None,
-                baseline=1.0):
+def case_magecs(clf, data, perturbation_params, set_feature_values):
     """
     Compute MAgECs for every 'case' (individual row/member table).
     Use all features in data to compute MAgECs.
     NOTE 1: we prefix MAgECs with model_name.
     NOTE 2: we postfix non-MAgECs, such as 'perturb_<FEAT>_prob' with model_name.
     """
-    magecs = Z_Perturbation().z_perturbation(model, data, features, feature_type, set_feature_values,
-                            baseline=baseline)
+    features = perturbation_params["features"]
+    feature_type = perturbation_params["feature_type"]
+    baseline = perturbation_params["baseline"]
+    model_name = clf.name
+    
+    if feature_type == "grouped":
+        perturbation = GroupPerturbation(data, clf, features, feature_type)
+    else:
+        perturbation = ZPerturbation(data, clf, features, feature_type)
 
+    magecs = perturbation.run_perturbation(set_feature_values, baseline=baseline)
     all_features = magecs.columns
     magecs = magecs.reset_index()
     # rename features in case_magecs to reflect the fact that they are derived for a specific model
@@ -234,9 +246,7 @@ def magec_scores(magecs_feats,
                  model_feat_imp_dict,
                  scoring=lambda w: abs(w),
                  use_weights=False,
-                 weights={'rf': None, 'mlp': None, 'lr': None},
-                 policy='sum',
-                 num_models_rank=None):
+                 weights={'rf': None, 'mlp': None, 'lr': None}):
     """
     Returns a dictionary of all MAgEC scores computed as a naive sum across models
     magecs_feats is a dictionary with magec feature column names and magec value column names for every model,
@@ -245,10 +255,6 @@ def magec_scores(magecs_feats,
      'mlp': {'mlp_feat_1': 'mlp_magec_1', 'mlp_feat_2': 'mlp_magec_2'},
      'lr': {'lr_feat_1': 'lr_magec_1', 'lr_feat_2': 'lr_magec_2'}}
     """
-    assert policy in ['sum', 'mean'], "Only 'sum' or 'mean' policy is supported"
-    if num_models_rank is None:
-        # sum all models per feature
-        num_models_rank = len(magecs_feats)
     consensus = {}
     scores = {}
     if use_weights:
@@ -263,7 +269,7 @@ def magec_scores(magecs_feats,
             
             # Modify score with model feature importance weight
             # model_name = model.split("_")[0]
-            feat_imp_weight = model_feat_imp_dict[model][feat]
+            feat_imp_weight = model_feat_imp_dict[model].get(feat, 1.0)
             score *= feat_imp_weight
             
             # # Convert ln(OR) to OR
@@ -284,8 +290,8 @@ def magec_scores(magecs_feats,
                 consensus[feat] = [model]
     for feat in scores.keys():
         # sum the top N (equal to num_models_rank)
-        scores[feat] = sum(sorted(scores[feat], reverse=True)[:num_models_rank])
-    if policy == 'mean':
-        for feat, score in scores.items():
-            scores[feat] = score / len(consensus[feat][:num_models_rank])
+        scores[feat] = sum(sorted(scores[feat], reverse=True))#[:num_models_rank])
+    # Get mean scores
+    for feat, score in scores.items():
+        scores[feat] = score / len(consensus[feat])#[:num_models_rank])
     return scores

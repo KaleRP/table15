@@ -19,7 +19,7 @@ def test_yaml_parser(test_configs):
 
 def test_get_from_configs(test_configs):
     
-    assert plutils.get_from_configs(test_configs, "POLICY", param_type="CONFIGS") == "test"
-    assert plutils.get_from_configs(test_configs, "policy", param_type="CONFIGS") == "test"
+    assert plutils.get_from_configs(test_configs, "MODELS", param_type="CONFIGS") == ['lr']
+    assert plutils.get_from_configs(test_configs, "models", param_type="CONFIGS") == ['lr']
     assert plutils.get_from_configs(test_configs, "foo", param_type="CONFIGS") == None  
     
