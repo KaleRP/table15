@@ -8,7 +8,7 @@ import utils.pipeline_utils as plutils
 from utils.data_tables import DataTables
 from utils.models_container import ModelsContainer
 
-from src.table15.configs import PipelineConfigs
+from configs import PipelineConfigs
 
 
 def run(configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]: 

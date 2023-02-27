@@ -3,9 +3,9 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-from src.table15.perturbations.group_perturbation import GroupPerturbation
+from perturbations.group_perturbation import GroupPerturbation
 
-from src.table15.perturbations.z_perturbation import ZPerturbation
+from perturbations.z_perturbation import ZPerturbation
 
 
 

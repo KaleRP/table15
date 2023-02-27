@@ -1,6 +1,6 @@
 from typing import List
-from src.table15.models.model import Model
-from src.table15.perturbations.perturbation import Perturbation
+from models.model import Model
+from perturbations.perturbation import Perturbation
 import numpy as np
 import pandas as pd
 

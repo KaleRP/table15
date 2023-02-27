@@ -8,7 +8,7 @@ from keras.layers import Dense, Dropout, Layer
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 
-from src.table15.models.model import Model
+from models.model import Model
 
 
 class DeepModels(Model):

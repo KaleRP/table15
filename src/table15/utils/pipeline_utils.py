@@ -2,14 +2,10 @@ import multiprocessing as mp
 from collections import defaultdict
 from typing import Any, Dict
 
-
 import numpy as np
 import pandas as pd
-from src.table15.configs import DataConfigs
-from src.table15.utils.data_tables import DataTables
-
-from src.table15.utils.models_container import ModelsContainer
-
+from utils.data_tables import DataTables
+from utils.models_container import ModelsContainer
 
 # from table15.utils import magec_utils as mg
 from . import magec_utils as mg

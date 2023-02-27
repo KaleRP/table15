@@ -9,9 +9,9 @@ import shap
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 
-from src.table15.configs import ModelConfigs
-from src.table15.models.model import Model
-from src.table15.models.model_factory import ModelFactory
+from configs import ModelConfigs
+from models.model import Model
+from models.model_factory import ModelFactory
 
 
 class ModelsContainer:
