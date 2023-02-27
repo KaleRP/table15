@@ -6,8 +6,8 @@ from typing import Any, Dict, Optional
 import numpy as np
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 
-from src.table15.configs import ModelConfigs
-from src.table15.models.model import Model
+from configs import ModelConfigs
+from models.model import Model
 
 
 class LinearModel(Model):

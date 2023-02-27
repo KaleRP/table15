@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 
-from src.table15.models.model import Model
+from models.model import Model
 
 
 class EnsembleModels(Model):
