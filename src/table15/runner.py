@@ -1,17 +1,19 @@
 import os
+import sys
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from typing import List
 
 import pandas as pd
-import utils.pipeline_utils as plutils
-from utils.data_tables import DataTables
-from utils.models_container import ModelsContainer
+from pathlib import Path
 
-from configs import PipelineConfigs
+import table15.utils.pipeline_utils as plutils
+from table15.configs import PipelineConfigs
+from table15.utils.data_tables import DataTables
+from table15.utils.models_container import ModelsContainer
 
 
-def run(pipeline_configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]: 
+def run(pipeline_configs_path: str='./configs/pipeline_configs/pima.yaml', output_path='./output') -> List[pd.DataFrame]: 
     """ Application's main driver method. Steps include:
     1) Setup configurations and pipeline parameters
     2) Generate input data and supporting metrics
@@ -53,23 +55,24 @@ def run(pipeline_configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.Da
                                                                                feature_type=feature_type, 
                                                                                use_multiprocessing=use_multiprocessing)
         df_out_by_feature_types.append(df_out)
-    
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        df_out.to_csv(Path(f'{output_path}/{feature_type}.csv').absolute())
+
     for df in df_out_by_feature_types:
         if df is not None:
             print(df.head(20))
-            
+        
+    print("Done!")
     return df_out_by_feature_types
 
 
 if __name__ == '__main__':
-    
-    config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/pima.yaml"
-    # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/stroke.yaml"
-    
-    if config_path:
-        df_logits_out, all_joined_dfs = run(pipeline_configs_path=config_path)
+    args = sys.argv[1:]
+    if len(args) > 0:
+        pipeline_configs_path = args[0]
+        output_path = args[1] if len(args) > 1 else './output'
     else:
-        df_logits_out, all_joined_dfs = run()
-
-    print('Done!')
-    
+        pipeline_configs_path = 'src/table15/configs/pipeline_configs/pima.yaml'
+        output_path = './output'
+    df_logits_out, all_joined_dfs = run(pipeline_configs_path=pipeline_configs_path, output_path=output_path)
