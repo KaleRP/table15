@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.svm import SVC, LinearSVC
 
-from models.model import Model
+from table15.models.model import Model
 
 
 class SVM(Model):

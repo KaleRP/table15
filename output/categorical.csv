@@ -1,0 +1,10 @@
+,feature,1,counts
+0,work_type__cat__Govt_job,6.086 (0.476),126
+1,work_type__cat__Never_worked,11.698 (0.195),2
+2,work_type__cat__Private,-3.873 (0.564),581
+3,work_type__cat__Self-employed,-5.254 (0.799),175
+4,work_type__cat__children,-278.353 (26.350),138
+5,smoking_status__cat__Unknown,-5.364 (0.479),303
+6,smoking_status__cat__formerly smoked,0.060 (0.419),176
+7,smoking_status__cat__never smoked,2.924 (0.392),385
+8,smoking_status__cat__smokes,-11.602 (0.632),158

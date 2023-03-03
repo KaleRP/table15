@@ -12,7 +12,7 @@ def z_pert():
 
 @pytest.fixture
 def data_and_model():
-    yaml_path = "/Users/ag46548/dev/github/KaleRP/table15/tests/configs/t_configs.yaml"
+    yaml_path = "tests/configs/t_configs.yaml"
     configs = plutils.yaml_parser(yaml_path)
     
     dutils = DataTables().generate_data(configs)

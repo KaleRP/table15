@@ -1,5 +1,5 @@
 DATA:
-  PATH: "src/data/healthcare-dataset-stroke-data.csv"
+  PATH: "src/data/stroke.csv"
   TYPE: "csv"
   N_DATA_SAMPLES: null
   TEST_SIZE: 0.2

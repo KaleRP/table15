@@ -1,10 +1,10 @@
-from configs import ModelConfigs
-from models.deep_models import KerasMultiLayerPerceptron
-from models.ensemble_models import SklearnRandomForest, SklearnVotingClassifier
-from models.linear_models import (SklearnLogisticRegression,
+from table15.configs import ModelConfigs
+from table15.models.deep_models import KerasMultiLayerPerceptron
+from table15.models.ensemble_models import SklearnRandomForest, SklearnVotingClassifier
+from table15.models.linear_models import (SklearnLogisticRegression,
                                               SklearnLogisticRegressionCV)
-from models.model import Model
-from models.svm_models import SklearnKernelSVM, SklearnLinearSVM
+from table15.models.model import Model
+from table15.models.svm_models import SklearnKernelSVM, SklearnLinearSVM
 
 
 class ModelFactory:

@@ -86,14 +86,6 @@ table15
 │   │   ├── runner.py
 │   │   └── utils
 │   │       ├── __init__.py
-│   │       ├── __pycache__
-│   │       │   ├── __init__.cpython-38.pyc
-│   │       │   ├── data_tables.cpython-38.pyc
-│   │       │   ├── data_utils.cpython-38.pyc
-│   │       │   ├── magec_utils.cpython-38.pyc
-│   │       │   ├── model_utils.cpython-38.pyc
-│   │       │   ├── models_container.cpython-38.pyc
-│   │       │   └── pipeline_utils.cpython-38.pyc
 │   │       ├── data_tables.py
 │   │       ├── magec_utils.py
 │   │       ├── models_container.py

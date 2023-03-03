@@ -1,8 +1,9 @@
 from typing import List
-from models.model import Model
-from perturbations.perturbation import Perturbation
-import numpy as np
+
 import pandas as pd
+from table15.models.model import Model
+from table15.perturbations.perturbation import Perturbation
+
 
 class ZPerturbation(Perturbation):
     def __init__(self, target_data: pd.DataFrame, model: Model, features: List[str], feature_type: str) -> None:

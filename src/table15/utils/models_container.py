@@ -6,12 +6,10 @@ from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 import shap
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
 
-from configs import ModelConfigs
-from models.model import Model
-from models.model_factory import ModelFactory
+from table15.configs import ModelConfigs
+from table15.models.model import Model
+from table15.models.model_factory import ModelFactory
 
 
 class ModelsContainer:

@@ -1,8 +1,10 @@
 from typing import List
-import pandas as pd
-import numpy as np
 
-from models.model import Model
+import numpy as np
+import pandas as pd
+
+from table15.models.model import Model
+
 
 class Perturbation:
     def __init__(self, target_data: pd.DataFrame, model: Model, features: List[str], feature_type:str) -> None:

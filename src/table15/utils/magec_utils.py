@@ -1,13 +1,12 @@
 import heapq
-from collections import OrderedDict
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
-from perturbations.group_perturbation import GroupPerturbation
 
-from perturbations.z_perturbation import ZPerturbation
-from src.table15.models.model import Model
+from table15.models.model import Model
+from table15.perturbations.group_perturbation import GroupPerturbation
+from table15.perturbations.z_perturbation import ZPerturbation
 
 
 def case_magecs(model: Model, data: pd.DataFrame, perturbation_params: Dict[str, Any], set_feature_values: Dict[str, float]) -> pd.DataFrame:

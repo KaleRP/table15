@@ -4,10 +4,10 @@ from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
-from utils.data_tables import DataTables
-from utils.models_container import ModelsContainer
 
-from src.table15.models.model import Model
+from table15.models.model import Model
+from table15.utils.data_tables import DataTables
+from table15.utils.models_container import ModelsContainer
 
 from . import magec_utils as mg
 
@@ -65,7 +65,7 @@ def generate_table_by_feature_type(data_tables: DataTables, models_container: Mo
             data_tables, perturbation_params, models_container.models_dict)
     if isinstance(features[0], list):
         features = ["::".join(group) for group in data_tables.grouped_features]
-    baseline_to_outputs_df, = agg_models_per_baseline(baseline_runs, data_tables, models_container, features)
+    baseline_to_outputs_df = agg_models_per_baseline(baseline_runs, data_tables, models_container, features)
 
     df_out = visualize_output(baseline_to_outputs_df, perturbation_intensities, features, data_tables.test_stats_dict.get(feature_type))
 

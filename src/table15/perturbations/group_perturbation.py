@@ -3,8 +3,8 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from models.model import Model
-from perturbations.perturbation import Perturbation
+from table15.models.model import Model
+from table15.perturbations.perturbation import Perturbation
 
 
 class GroupPerturbation(Perturbation):

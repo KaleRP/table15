@@ -4,7 +4,7 @@ from table15.utils import pipeline_utils as plutils
 
 @pytest.fixture
 def test_configs():
-    yaml_path = "/Users/ag46548/dev/github/KaleRP/table15/tests/configs/test_configs.yaml"
+    yaml_path = "tests/configs/test_configs.yaml"
     configs = plutils.yaml_parser(yaml_path)
     
     assert "CONFIGS" in configs
