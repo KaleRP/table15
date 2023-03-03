@@ -63,11 +63,11 @@ class DataTables:
         csv_path = self.data_configs.get_from_configs('PATH', param_type='DATA')
         csv_path = self.data_configs.to_absolute_path(csv_path)
 
-        numerical_features = self.data_configs.get_from_configs('NUMERICAL', param_type='FEATURES')
-        categorical_features = self.data_configs.get_from_configs('CATEGORICAL', param_type='FEATURES')
-        binary_features = self.data_configs.get_from_configs('BINARY', param_type='FEATURES')
-        target_feature = self.data_configs.get_from_configs('TARGET', param_type='FEATURES')
-        self.grouped_features = self.data_configs.get_from_configs('GROUPED', param_type='FEATURES')
+        numerical_features = self.data_configs.get_from_configs('NUMERICAL', param_type='FEATURES', default=[])
+        categorical_features = self.data_configs.get_from_configs('CATEGORICAL', param_type='FEATURES', default=[])
+        binary_features = self.data_configs.get_from_configs('BINARY', param_type='FEATURES', default=[])
+        target_feature = self.data_configs.get_from_configs('TARGET', param_type='FEATURES', default=[])
+        self.grouped_features = self.data_configs.get_from_configs('GROUPED', param_type='FEATURES', default=[])
         
         self.setted_numerical_values = self.data_configs.get_from_configs('SETTED_NUMERICAL_VALUES', 
                                                                           param_type='FEATURES',
@@ -90,13 +90,13 @@ class DataTables:
 
         x_bin = df.loc[:, binary_features]
         self.binary_features = binary_features
-
+        
         x_cat = df.loc[:, categorical_features].fillna('')
         if not x_cat.empty:
             # use prefix_sep to delimitate later
             x_cat = pd.get_dummies(x_cat, prefix_sep='__cat__')
         self.categorical_features = list(x_cat.columns)
-        
+
         non_numerical_features = self.binary_features + self.categorical_features
 
         x = pd.concat([x_num, x_bin, x_cat], axis=1)
@@ -187,13 +187,13 @@ class DataTables:
         self.test_stats_dict['categorical']['counts'] = x_test_cat.sum()
 
     def get_features_by_type(self, feature_type: str) -> List[str]:
-        """Convert string of feature type to 
+        """Convert string of feature type to the corresponding list of features
 
         Args:
-            feature_type (_type_): _description_
+            feature_type (str): Key to features_type_to_features
 
         Returns:
-            List[str]: _description_
+            List[str]: List of features
         """
         if feature_type not in ["numerical", "binary", "categorical", "grouped"]:
             raise ValueError('Feature type must be numerical, binary, categorical, or grouped')

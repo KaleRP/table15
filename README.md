@@ -107,10 +107,15 @@ table15
 ```
 
 ## Usage
+To generate Table 1.5, the main entry point is through `runner.py`. This takes a single parameter `pipeline_configs_path`, which contains arguments to run the pipeline, as well as references to other configs (Data Configs, Model Configs) that are necessary to run the pipeline.
+Generate a Pipeline Configs yaml (example at src/table15/configs/pipeline_configs/stroke.yaml) that contains general parameters for the pipeline that are meant to be changed frequently for different runs.
+Reference a Data Configs yaml (example at src/table15/configs/pipeline_configs/stroke.yaml) that references configs related to data and are meant to be more static (ie, we don't change the data arguments very often)
+Also reference a set of Model Configs yamls (example at src/table15/configs/model_configs/linear_model_configs/lr_1.yaml), which almost never change except for tuning and when implementing a new model.
+Together, these can be used to generate Table 1.5
 
 ```python
 import table15
-table15.runner.run(`file_path`)
+table15.runner.run(`path_to_pipeline_configs_yaml`)
 ```
 
 ## Support
