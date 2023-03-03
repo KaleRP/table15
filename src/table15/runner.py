@@ -11,7 +11,7 @@ from utils.models_container import ModelsContainer
 from configs import PipelineConfigs
 
 
-def run(configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]: 
+def run(pipeline_configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]: 
     """ Application's main driver method. Steps include:
     1) Setup configurations and pipeline parameters
     2) Generate input data and supporting metrics
@@ -20,11 +20,11 @@ def run(configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]:
     5) Display and return table
 
     Args:
-        configs_path (str, optional): _description_. Defaults to './configs/pima_diabetes.yaml'.
+        pipeline_configs_path (str, optional): _description_. Defaults to './configs/pima_diabetes.yaml'.
 
-    Returns: Dict[str, pd.DataFrame]: Dict with feature_type as keys and pandas dataframes representing output tables
+    Returns: List[pd.DataFrame]: List of pandas dataframes representing output tables
     """
-    pipeline_configs = PipelineConfigs(configs_path)
+    pipeline_configs = PipelineConfigs(pipeline_configs_path)
     
     data_configs_path = pipeline_configs.get_from_configs("DATA_CONFIGS_PATH", param_type="DATA")
     models_configs_paths = pipeline_configs.get_from_configs('MODEL_CONFIGS_PATHS', param_type='MODELS')
@@ -46,21 +46,19 @@ def run(configs_path: str='./configs/pima_diabetes.yaml') -> List[pd.DataFrame]:
         .train_models() \
         .store_feature_importance_from_models(use_feature_importance_scaling=use_feature_importance_scaling)
 
-    df_logits_out_by_feature_types = []
-    all_joined_dfs_by_feature_types = []
+    df_out_by_feature_types = []
     feature_types = ["numerical", "binary", "categorical", "grouped"]
     for feature_type in feature_types:
-        df_logits_out, all_joined_dfs = plutils.generate_table_by_feature_type(data_tables, models_container, 
+        df_out = plutils.generate_table_by_feature_type(data_tables, models_container, 
                                                                                feature_type=feature_type, 
                                                                                use_multiprocessing=use_multiprocessing)
-        df_logits_out_by_feature_types.append(df_logits_out)
-        all_joined_dfs_by_feature_types.append(all_joined_dfs)
+        df_out_by_feature_types.append(df_out)
     
-    for df in df_logits_out_by_feature_types:
+    for df in df_out_by_feature_types:
         if df is not None:
             print(df.head(20))
             
-    return df_logits_out_by_feature_types
+    return df_out_by_feature_types
 
 
 if __name__ == '__main__':
@@ -69,7 +67,7 @@ if __name__ == '__main__':
     # config_path = "/Users/ag46548/dev/github/KaleRP/table15/src/table15/configs/pipeline_configs/stroke.yaml"
     
     if config_path:
-        df_logits_out, all_joined_dfs = run(configs_path=config_path)
+        df_logits_out, all_joined_dfs = run(pipeline_configs_path=config_path)
     else:
         df_logits_out, all_joined_dfs = run()
 

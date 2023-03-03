@@ -5,7 +5,8 @@ DATA:
   TEST_SIZE: 0.2
   RANDOM_SEED: null
   ONLY_TEST_POSITIVE_CLASS: false
-
+  RUN_NORMALIZATION: false
+  
 
 FEATURES:
   NUMERICAL: ["BloodPressure", "BMI", "Glucose", "Insulin", "SkinThickness"]

@@ -1,12 +1,100 @@
 import heapq
 from collections import OrderedDict
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
 from perturbations.group_perturbation import GroupPerturbation
 
 from perturbations.z_perturbation import ZPerturbation
+from src.table15.models.model import Model
 
+
+def case_magecs(model: Model, data: pd.DataFrame, perturbation_params: Dict[str, Any], set_feature_values: Dict[str, float]) -> pd.DataFrame:
+    """Compute MAgECs for every 'case' (individual row/member table).
+        NOTE 1: we prefix MAgECs with model_name.
+        NOTE 2: we postfix non-MAgECs, such as 'perturb_<FEAT>_prob' with model_name.
+
+    Args:
+        model (Model): An implemented Model object
+        data (pd.DataFrame): Dataframe with x_test
+        perturbation_params (Dict[str, Any]): Helper dictionary to pass parameters for perturbations.
+        set_feature_values (Dict[str, float]): Feature values that can be perturbed to instead of perturbing to the mean
+
+    Returns:
+        pd.DataFrame: The computed outputs based on MAgECS.
+    """
+
+    features = perturbation_params["features"]
+    feature_type = perturbation_params["feature_type"]
+    baseline = perturbation_params["baseline"]
+    output_type = perturbation_params["output_type"]
+    
+    if feature_type == "grouped":
+        perturbation = GroupPerturbation(data, model, features, feature_type)
+    else:
+        perturbation = ZPerturbation(data, model, features, feature_type)
+
+    magecs = perturbation.run_perturbation(set_feature_values, output_type, baseline=baseline)
+    all_features = magecs.columns
+    magecs = magecs.reset_index()
+    # rename features in case_magecs to reflect the fact that they are derived for a specific model
+    prefix = 'm' if model.name is None else model.name
+    postfix = prefix
+    for feat in all_features:
+        if feat == 'orig_prob' or (feat[:8] == 'perturb_' and feat[-5:] == '_prob'):
+            magecs.rename(columns={feat: feat + '_' + postfix}, inplace=True)
+        else:
+            magecs.rename(columns={feat: create_magec_col(prefix, feat)}, inplace=True)
+    return magecs
+
+
+def normalize_magecs(magecs: pd.DataFrame,
+                     features: List[str]=None,
+                     model_name: str=None) -> pd.DataFrame:
+    """Normalize MAgECs for every 'case' using an L2 norm.
+        Note, this method may become deprecated, as the normalized values become difficult to interpret.
+
+    Args:
+        magecs (pd.DataFrame): Input dataframe to be normalized
+        features (List[str], optional): List of features
+        model_name (str, optional): name of model from Model Configs. Defaults to None.
+
+    Returns:
+        pd.DataFrame: Normalized MAgEC output values
+    """
+    out = magecs.copy()
+
+    if features is None:
+        prefix = 'm_' if model_name is None else model_name + '_'
+        cols = [c for c in magecs.columns if c.startswith(prefix)]
+    else:
+        cols = [create_magec_col(m_prefix(magecs, feat, model_name), feat) for feat in features]
+    for (idx, row) in out.iterrows():
+        norm = np.linalg.norm(row.loc[cols].values)
+        out.loc[idx, cols] = out.loc[idx, cols] / norm
+    return out
+
+
+def magec_models(*magecs, **kwargs):
+    """
+    Wrapper function for joining MAgECs from different models together and (optionally) w/ tabular data
+    """
+    Xdata = kwargs.get('Xdata', None)
+    Ydata = kwargs.get('Ydata', None)
+    features = kwargs.get('features', [])
+    assert len(magecs) > 1
+    jcols, cols = magec_cols(magecs[0], features)
+    magec = magecs[0][cols]
+    if Xdata is not None:
+        magec = magec.merge(Xdata.reset_index(), on=jcols)
+    if Ydata is not None:
+        magec = magec.merge(Ydata.reset_index(), on=jcols)
+    for mgc in magecs[1:]:
+        _, cols = magec_cols(mgc, features)
+        mgc = mgc[cols]
+        magec = magec.merge(mgc, on=jcols)
+    return magec
 
 
 def m_prefix(magecs, feature, model_name=None):
@@ -26,7 +114,43 @@ def m_prefix(magecs, feature, model_name=None):
     return prefix
 
 
+def create_magec_col(model_name: str, feature: str) -> str:
+    """Helper function to generate internal column names
+
+    Args:
+        model_name (str): Name of model found in Model Configs
+        feature (str): Feature name
+
+    Returns:
+        str: Concatenated string for internal column reference
+    """
+    if isinstance(feature, list):
+        feature = "::".join(feature)
+    return model_name + '_' + feature
+
+
+def magec_cols(magec: pd.DataFrame, features: List[str]) -> Tuple[List[str]]:
+    """Internal column identifyer
+
+    Args:
+        magec (pd.DataFrame): Dataframe of MAgEC outputs
+        features (List[str]): List of features
+
+    Returns:
+        Tuple[List[str]]: First item is a list of index columns and the second item is a list of MAgEC output columns
+    """
+    all_cols = magec.columns
+    orig_prob_col = [col for col in all_cols if col.startswith('orig_prob_')]
+    jcols = ['case', 'timepoint']
+    m_cols = [col for col in all_cols if '_'.join(col.split('_')[1:]) in features]
+    prob_cols = [col for col in all_cols if col.startswith('perturb_') and
+                 col[8:].split('_prob_')[0] in features]
+    cols = jcols + m_cols + prob_cols + orig_prob_col
+    return jcols, cols
+
+
 def name_matching(cols, models):
+    """Warning: deprecated."""
     # get all magec column names
     col_names = dict()
     for col in cols:
@@ -62,102 +186,13 @@ def name_matching(cols, models):
     return magecs_feats
 
 
-def create_magec_col(model_name, feature):
-    if isinstance(feature, list):
-        feature = "::".join(feature)
-    return model_name + '_' + feature
-
-
-def case_magecs(model, data, perturbation_params, set_feature_values):
-    """
-    Compute MAgECs for every 'case' (individual row/member table).
-    Use all features in data to compute MAgECs.
-    NOTE 1: we prefix MAgECs with model_name.
-    NOTE 2: we postfix non-MAgECs, such as 'perturb_<FEAT>_prob' with model_name.
-    """
-    features = perturbation_params["features"]
-    feature_type = perturbation_params["feature_type"]
-    baseline = perturbation_params["baseline"]
-    output_type = perturbation_params["output_type"]
-    
-    if feature_type == "grouped":
-        perturbation = GroupPerturbation(data, model, features, feature_type)
-    else:
-        perturbation = ZPerturbation(data, model, features, feature_type)
-
-    magecs = perturbation.run_perturbation(set_feature_values, output_type, baseline=baseline)
-    all_features = magecs.columns
-    magecs = magecs.reset_index()
-    # rename features in case_magecs to reflect the fact that they are derived for a specific model
-    prefix = 'm' if model.name is None else model.name
-    postfix = prefix
-    for feat in all_features:
-        if feat == 'orig_prob' or (feat[:8] == 'perturb_' and feat[-5:] == '_prob'):
-            magecs.rename(columns={feat: feat + '_' + postfix}, inplace=True)
-        else:
-            magecs.rename(columns={feat: create_magec_col(prefix, feat)}, inplace=True)
-    return magecs
-
-
-def normalize_magecs(magecs,
-                     features=None,
-                     model_name=None):
-    """
-    Normalize MAgECs for every 'case' using an L2 norm.
-    Use (typically) all MAgEC columns (or a subset of features). Former is advised.
-    NOTE: The convention is that MAgECs are prefixed with model_name.
-    """
-    out = magecs.copy()
-
-    if features is None:
-        prefix = 'm_' if model_name is None else model_name + '_'
-        cols = [c for c in magecs.columns if c.startswith(prefix)]
-    else:
-        cols = [create_magec_col(m_prefix(magecs, feat, model_name), feat) for feat in features]
-    for (idx, row) in out.iterrows():
-        norm = np.linalg.norm(row.loc[cols].values)
-        out.loc[idx, cols] = out.loc[idx, cols] / norm
-    return out
-
-
-def magec_cols(magec, features):
-    all_cols = magec.columns
-    orig_prob_col = [col for col in all_cols if col.startswith('orig_prob_')]
-    jcols = ['case', 'timepoint']
-    m_cols = [col for col in all_cols if '_'.join(col.split('_')[1:]) in features]
-    prob_cols = [col for col in all_cols if col.startswith('perturb_') and
-                 col[8:].split('_prob_')[0] in features]
-    cols = jcols + m_cols + prob_cols + orig_prob_col
-    return jcols, cols
-
-
-def magec_models(*magecs, **kwargs):
-    """
-    Wrapper function for joining MAgECs from different models together and (optionally) w/ tabular data
-    """
-    Xdata = kwargs.get('Xdata', None)
-    Ydata = kwargs.get('Ydata', None)
-    features = kwargs.get('features', [])
-    assert len(magecs) > 1
-    jcols, cols = magec_cols(magecs[0], features)
-    magec = magecs[0][cols]
-    if Xdata is not None:
-        magec = magec.merge(Xdata.reset_index(), on=jcols)
-    if Ydata is not None:
-        magec = magec.merge(Ydata.reset_index(), on=jcols)
-    for mgc in magecs[1:]:
-        _, cols = magec_cols(mgc, features)
-        mgc = mgc[cols]
-        magec = magec.merge(mgc, on=jcols)
-    return magec
-
-
 def magec_rank(magecs,
                models=('mlp', 'rf', 'lr'),
                rank=3,
                features=('BloodPressure', 'BMI', 'Glucose', 'Insulin', 'SkinThickness'),
                outcome='Outcome'):
     """
+    Warning: deprecated.
     Compute top-magecs (ranked) for each model for each 'case/timepoint' (individual row in tabular data).
     Input is a list of one or more conputed magecs given a model.
     Output is a Pandas dataframe with computed magecs.
@@ -248,6 +283,7 @@ def magec_scores(magecs_feats,
                  use_weights=False,
                  weights={'rf': None, 'mlp': None, 'lr': None}):
     """
+    Warning: deprecated.
     Returns a dictionary of all MAgEC scores computed as a naive sum across models
     magecs_feats is a dictionary with magec feature column names and magec value column names for every model,
      e.g
