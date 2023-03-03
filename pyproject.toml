@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "table15"
-version = "0.1.0"
+version = "1.0.1"
 description = "Table 1.5 is a Python application that can generate a table that is adjunct to a typical Table 1 (association statistics). Table 1.5 goes beyond static association by analyzing the impact that a change in each single feature has to changes in the outcome."
 readme = "README.md"
 authors = [{ name="Rajas Kale", email="rajas.kale@carelon.com" }]
